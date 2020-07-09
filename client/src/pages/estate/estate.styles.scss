@@ -1,0 +1,40 @@
+.estate {
+  padding: 10px;
+  width: 90vw;
+  margin: 0 auto;
+
+  .title {
+    color: white;
+    padding: 0.5em;
+  }
+
+  .main-area {
+    background-color: #f8f8f8;
+    display: flex;
+
+    &>div:first-child{
+      width: 30%;
+    }
+
+    .form-area {
+      padding: 1em;
+      display: flex;
+
+      form {
+        display: flex;
+        flex-wrap: wrap;
+
+        .form-col {
+          padding: 10px;
+
+          &.controls {
+            display: flex;
+            flex-direction: row;
+            padding: 10px;
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}

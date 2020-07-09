@@ -1,0 +1,40 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  padding: 10px;
+
+  h1 {
+    display: flex;
+    padding: 0px 0px 0px 10px;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    i {
+      background-color: #FFA52A;
+      border-radius: 100%;
+      padding: 2px;
+      width: 35px;
+      height: 35px;
+      text-align: center;
+    }
+  }
+
+  div {
+    display: flex;
+    align-items: center;
+
+    div {
+      align-items: center;
+      height: auto;
+      height: 50px;
+      padding: 0px 10px;
+
+      &:first-child {
+        border-right: 1px solid white;
+      }
+    }
+  }
+}

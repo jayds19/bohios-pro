@@ -1,0 +1,59 @@
+.image-list {
+
+  & > label {
+    color: #555555;
+    font-weight: bold;
+  }
+  
+  .image-input {
+    display: block;
+    background-color: white;
+    border-radius: 5px;
+    padding: 6px;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+
+    & > .list-item {
+      font-size: 12px;
+      padding: 5px;
+      margin: 4px;
+      background-color: #4285F4;
+      color: white;
+      border-radius: 5px;
+      display: flex;
+
+      span {
+        width: 100%;
+      }
+
+      & > div {
+        border-radius: 5px;
+        border: 1px solid white;
+        display: flex;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.5);
+          cursor: pointer;
+        }
+      }
+    }
+
+    & > label {
+      font-size: 12px;
+      border-radius: 5px;
+      border: none;
+      padding: 5px;
+      margin: 5px;
+      background-color: gray;
+      color: white;
+
+      &:hover {
+        cursor: pointer;
+        opacity: 0.9;
+      }
+    }
+
+    & > input {
+      display: none;
+    }
+  }
+}
