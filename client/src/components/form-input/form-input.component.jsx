@@ -1,5 +1,5 @@
 import React from "react";
-
+import "bootstrap/dist/css/bootstrap.css";
 import "./form-input.styles.scss";
 
 const FormInput = ({ handleChange, type, width, label, ...otherProps }) => (
