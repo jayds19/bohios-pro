@@ -13,6 +13,7 @@ module.exports = {
   },
   ERRORS: {
     PARAM_ERROR: "PARAM_ERROR",
-    DB_ERROR: "DB_ERROR"
+    DB_ERROR: "DB_ERROR",
+    NOT_FOUND: "NOT_FOUND"
   }
 };

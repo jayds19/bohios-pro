@@ -4,6 +4,18 @@ const { mysqlConfig } = require("../config");
 
 const localConnection = mysql.createPool(mysqlConfig);
 
+const localQuery = (query) =>
+  new Promise((resolve, reject) => {
+    localConnection.query(query, (error, rows, fields) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve(rows);
+    });
+  });
+
 const getContractTypes = () =>
   new Promise((resolve, reject) => {
     localConnection.query("select * from contract_type;", (err, rows, fields) => {
@@ -156,6 +168,7 @@ const saveEstate = (
 
 module.exports = {
   localConnection,
+  localQuery,
   getContractTypes,
   getEstateTypes,
   getCurrencies,

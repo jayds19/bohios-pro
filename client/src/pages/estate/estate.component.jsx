@@ -10,10 +10,14 @@ import CustomButton from "../../components/custom-button/custom-button.component
 import ImageList from "../../components/image-list/image-list.component";
 import CheckList from "../../components/check-list/check-list.component";
 import FormTab from "../../components/form-tab/form-tab.component";
+import CustomModal from "../../components/custom-modal/custom-modal.component";
 
 import "./estate.styles.scss";
 
-//TODO: Lista de inmuebles registrados.
+//TODO: Show message when saving estate.
+//TODO: Button to clean form.
+//TODO: Save images.
+//TODO: Save amenities.
 
 class Estate extends React.Component {
 
@@ -49,25 +53,57 @@ class Estate extends React.Component {
       amenities: [],
       gallery: [],
       tabPosition: 0,
+      estates: [],
+      titleToFind: "",
       contractTypeToFind: 0,
-      estateTypeToFind: 0
+      estateTypeToFind: 0,
+      modalIsOpen: false,
+      modalType: "",
+      modalMessage: ""
     };
   }
 
-  componentDidMount = () => {
-    console.log("Mount");
-    axios.get("http://localhost:4000/api/estate/form")
-      .then(res => {
-        //console.log(">>> RES: ", res);
-        const { contractTypes, estateTypes, currencies, provinces, amenities } = res.data;
-        this.setState({
-          contractTypes,
-          estateTypes,
-          provinces,
-          currencies,
-          amenities
-        });
-      }).catch(ex => console.error("Could not load form data."));
+  showMessage = (type, message) => {
+    this.setState({
+      modalIsOpen: true,
+      modalType: type,
+      modalMessage: message
+    });
+  }
+
+  componentDidMount = async () => {
+
+    let formResponse = {};
+    let estatesResponse = {};
+
+    try {
+      formResponse = await axios.get("http://localhost:4000/api/estate/form");
+      estatesResponse = await axios.get("http://localhost:4000/api/estate/form/estates");
+    } catch (ex) {
+      formResponse.data = {
+        contractTypes: [],
+        estateTypes: [],
+        provinces: [],
+        currencies: [],
+        amenities: []
+      };
+
+      estatesResponse.data = { estates: [] };
+
+      this.showMessage("error", "No se pudo cargar la información del formulario, intente más tarde.");
+    }
+
+    const { contractTypes, estateTypes, currencies, provinces, amenities } = formResponse.data;
+    const { estates } = estatesResponse.data;
+
+    this.setState({
+      contractTypes,
+      estateTypes,
+      provinces,
+      currencies,
+      amenities,
+      estates
+    });
   }
 
   handleChange = (event) => {
@@ -203,8 +239,52 @@ class Estate extends React.Component {
       });
   }
 
+  handleFindSubmit = async (e) => {
+    e.preventDefault();
+
+    let estatesResponse = {};
+
+    try {
+      estatesResponse = await axios.get(`http://localhost:4000/api/estate/form/estates?title=${this.state.titleToFind}&contract_type=${this.state.contractTypeToFind}&estate_type=${this.state.estateTypeToFind}`);
+    } catch (ex) {
+      estatesResponse.data = { estates: [] };
+      this.showMessage("error", "No se pudo cargar información de búsqueda.");
+    }
+
+    const { estates } = estatesResponse.data;
+
+    this.setState({ estates });
+  }
+
+  handleIdSelect = async (id) => {
+    let formResponse = {};
+
+    try {
+      formResponse = await axios.get("http://localhost:4000/api/estate/form/estate?id=" + id);
+    } catch (ex) {
+      this.showMessage("error", "No se pudo cargar inmuble seleccionado.");
+      console.error(ex.message);
+    }
+
+    let { estate, amenities } = formResponse.data;
+
+    let municipalities = await axios.get(`http://localhost:4000/api/estate/form/municipalities?id=${estate.provinceId}`)
+      .then(res => res.data.municipalities)
+      .catch(ex => { console.error("Could not load municipalities data."); return []; });
+
+    let sectors = await axios.get(`http://localhost:4000/api/estate/form/sectors?id=${estate.municipalityId}`)
+      .then(res => res.data.sectors)
+      .catch(ex => { console.error("Could not load sectors data."); return []; });
+
+    this.setState({ id, tabPosition: 1, amenities, municipalities, sectors, ...estate });
+  }
+
   handleTab = (tabPosition) => {
     this.setState({ tabPosition });
+  }
+
+  closeModal = () => {
+    this.setState({ modalIsOpen: false });
   }
 
   render() {
@@ -212,14 +292,62 @@ class Estate extends React.Component {
       <div className="estate">
         <h2 className="title">Adminstración - Inmobiliarios</h2>
         <div className="main-area">
+          <CustomModal isOpen={this.state.modalIsOpen} type={this.state.modalType} title="Mensaje" closeModal={this.closeModal}>
+            {this.state.modalMessage}
+          </CustomModal>
           <FormSidebar current={1} />
           <div className="form-area">
             <FormTab handleTab={this.handleTab} tabPosition={this.state.tabPosition} />
-            {this.state.tabPosition == 0 ?
+            {this.state.tabPosition === 0 ?
               <div className="list-area">
-                <form>
-
+                <form onSubmit={this.handleFindSubmit}>
+                  <FormInput
+                    type="text"
+                    name="titleToFind"
+                    label="Título"
+                    value={this.state.titleTofind}
+                    handleChange={this.handleChange}
+                  />
+                  <FormSelect
+                    name="contractTypeToFind"
+                    label="Tipo de contrato"
+                    value={this.state.contractTypeToFind}
+                    handleChange={this.handleChange}
+                    items={this.state.contractTypes}
+                  />
+                  <FormSelect
+                    name="estateTypeToFind"
+                    label="Tipo de inmueble"
+                    value={this.state.estateTypeToFind}
+                    handleChange={this.handleChange}
+                    items={this.state.estateTypes}
+                  />
+                  <CustomButton type="submit" color="primary" icon="search" text="Buscar" />
                 </form>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Título</th>
+                      <th scope="col">Tipo contrato</th>
+                      <th scope="col">Tipo inmueble</th>
+                      <th scope="col">Likes</th>
+                      <th scope="col">Visitas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.estates.map(({ id, title, contract_type, estate_type, likes, views }) => (
+                      <tr title="Seleccionar" key={id} onClick={() => this.handleIdSelect(id)}>
+                        <td>{id}</td>
+                        <td>{title}</td>
+                        <td>{contract_type}</td>
+                        <td>{estate_type}</td>
+                        <td>{likes}</td>
+                        <td>{views}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
               :
               <div className="edit-area">

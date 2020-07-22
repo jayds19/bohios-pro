@@ -1,5 +1,7 @@
 const { ERRORS, MESSAGES } = require("../config");
 const {
+  localConnection,
+  localQuery,
   getContractTypes,
   getEstateTypes,
   getCurrencies,
@@ -9,6 +11,84 @@ const {
   getSectors,
   saveEstate
 } = require("../services/mysql");
+
+const getEstates = async (req, res) => {
+  //console.log(">>> Consulta: ", req.query);
+
+  let { title, contract_type, estate_type } = req.query;
+
+  if (title == "" || title == undefined) {
+    title = "";
+  }
+
+  if (contract_type == "" || contract_type == "0" || contract_type == undefined || isNaN(contract_type)) {
+    contract_type = "";
+  }
+
+  if (estate_type == "" || estate_type == "0" || estate_type == undefined || isNaN(estate_type)) {
+    estate_type = "";
+  }
+
+  let query = `select e.id, title,ct.description as contract_type, et.description as estate_type, 0 as likes, 0 as views
+  from estate e inner join contract_type ct on e.contract_type = ct.id
+  inner join estate_type et on e.estate_type = et.id
+  where e.id > 0
+  ${title != "" ? `and title like ${localConnection.escape('%' + title + '%')}` : ""}
+  ${contract_type != "" ? `and e.contract_type = ${localConnection.escape(contract_type)}` : ""}
+  ${estate_type != "" ? `and e.estate_type = ${localConnection.escape(estate_type)}` : ""}
+  order by e.id desc;`;
+
+  let estates = await localQuery(query)
+    .catch(ex => { console.log("Could not load estates. ", ex); return []; });
+
+  res.send({ estates });
+};
+
+const getEstate = async (req, res) => {
+
+  let { id } = req.query;
+
+  if (id == "" || id == "0" || id == undefined || isNaN(id)) {
+    res.status(400).send({ error: ERRORS.PARAM_ERROR });
+    return;
+  }
+
+  let estateQuery = `select 
+  id,
+  title,
+  description,
+  geo_x,
+  geo_y,
+  bedrooms,
+  bathrooms,
+  parking,
+  tour_id as tourId,
+  contract_type as contractType,
+  estate_type as estateType,
+  province_id as provinceId,
+  municipality_id as municipalityId,
+  sector_id as sectorId,
+  currency_id as currencyId,
+  price,
+  date_limit as dateLimit,
+  active
+  from estate where id = ${localConnection.escape(id)}`;
+
+  let estateRow = await localQuery(estateQuery)
+    .catch(ex => { console.log("Could not load estates. ", ex); return []; });
+
+  let amenities = await getAmenities(id)
+    .catch(ex => { console.log("Could not load amenities. ", ex); return []; });
+
+  let estate = estateRow[0];
+
+  if (estate == undefined) {
+    res.status(404).send({ error: ERRORS.NOT_FOUND });
+    return;
+  }
+
+  res.send({ estate, amenities });
+};
 
 const getEstateForm = async (req, res) => {
   let contractTypes = await getContractTypes()
@@ -218,4 +298,11 @@ const postSaveEstate = async (req, res) => {
   }
 }
 
-module.exports = { getEstateForm, getEstateMunicipalities, getEstateSectors, postSaveEstate };
+module.exports = {
+  getEstates,
+  getEstate,
+  getEstateForm,
+  getEstateMunicipalities,
+  getEstateSectors,
+  postSaveEstate
+};
