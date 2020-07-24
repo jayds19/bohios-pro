@@ -7,13 +7,13 @@ const {
   getCurrencies,
   getProvinces,
   getAmenities,
+  updateAmenities,
   getMunicipalities,
   getSectors,
   saveEstate
 } = require("../services/mysql");
 
 const getEstates = async (req, res) => {
-  //console.log(">>> Consulta: ", req.query);
 
   let { title, contract_type, estate_type } = req.query;
 
@@ -270,7 +270,7 @@ const postSaveEstate = async (req, res) => {
 
   active = (active ? 1 : 0);
 
-  let message = await saveEstate(id,
+  let { message, _id } = await saveEstate(id,
     title,
     description,
     geo_x,
@@ -291,8 +291,12 @@ const postSaveEstate = async (req, res) => {
 
   console.log(">>> MESSAGE: ", message);
 
+  let amenitiesResponse = await updateAmenities(_id, amenities).catch(ex => { console.log("Could not save amenities. ", ex.message); return "FAIL"; });
+
+  console.log(">>> Amenities response: ", amenitiesResponse);
+
   if (message) {
-    res.send({ message: "OK" });
+    res.send({ message });
   } else {
     res.status(500).send({ error: ERRORS.DB_ERROR });
   }

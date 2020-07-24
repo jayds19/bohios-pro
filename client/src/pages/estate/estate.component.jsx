@@ -14,10 +14,7 @@ import CustomModal from "../../components/custom-modal/custom-modal.component";
 
 import "./estate.styles.scss";
 
-//TODO: Show message when saving estate.
-//TODO: Button to clean form.
 //TODO: Save images.
-//TODO: Save amenities.
 
 class Estate extends React.Component {
 
@@ -227,16 +224,44 @@ class Estate extends React.Component {
       .then(res => {
         const { message } = res.data;
         if (message === "INSERTED") {
-          alert("Inmueble creado");
+          this.showMessage("success", "Inmueble creado");
+          this.handleCleanForm();
         } else if (message === "UPDATED") {
-          alert("Inmueble actualizado");
+          this.showMessage("success", "Inmueble actualizado");
+          this.handleCleanForm();
         } else {
-          alert("No se pudo guardar cambios");
+          this.showMessage("error", "No se pudo guardar cambios. No se pudo confirmar registro.");
         }
       }).catch(ex => {
         console.error("Could not save estate.");
-        alert("No se pudo guardar cambios");
+        this.showMessage("error", "No se pudo guardar cambios.");
       });
+  }
+
+  handleCleanForm = () => {
+    this.setState({
+      id: 0,
+      title: "",
+      description: "",
+      geo_x: "",
+      geo_y: "",
+      bedrooms: 1,
+      bathrooms: 1,
+      parking: 0,
+      tourId: 0,
+      contractType: 0,
+      estateType: 0,
+      provinceId: 0,
+      municipalityId: 0,
+      sectorId: 0,
+      currencyId: 0,
+      price: "",
+      dateLimit: "",
+      active: false,
+      amenity: 0,
+      amenities: this.state.amenities.map(item => ({ ...item, active: 0 })),
+      gallery: [],
+    });
   }
 
   handleFindSubmit = async (e) => {
@@ -279,8 +304,22 @@ class Estate extends React.Component {
     this.setState({ id, tabPosition: 1, amenities, municipalities, sectors, ...estate });
   }
 
-  handleTab = (tabPosition) => {
+  handleTab = async (tabPosition) => {
     this.setState({ tabPosition });
+    if (tabPosition === 0) {
+      this.handleCleanForm();
+
+      let estatesResponse = {};
+
+      try {
+        estatesResponse = await axios.get("http://localhost:4000/api/estate/form/estates");
+      } catch (ex) {
+        estatesResponse.data = { estates: [] };
+      }
+
+      const { estates } = estatesResponse.data;
+      this.setState({ estates });
+    }
   }
 
   closeModal = () => {
@@ -506,7 +545,7 @@ class Estate extends React.Component {
                   </div>
                   <div className="form-col controls">
                     <CustomButton type="submit" color="primary" icon="save" text="Guardar" />
-                    <CustomButton color="secondary" icon="autorenew" text="Limpiar" />
+                    <CustomButton onClick={this.handleCleanForm} color="secondary" icon="autorenew" text="Limpiar" />
                   </div>
                 </form>
               </div>

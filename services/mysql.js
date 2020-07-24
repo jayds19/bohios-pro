@@ -107,6 +107,44 @@ const getAmenities = (estateId = "") =>
     });
   });
 
+const updateAmenities = (estateId, amenities) =>
+  new Promise((resolve, reject) => {
+    let deleteQuery = `delete from amenity_vs_estate where estate_id = ${localConnection.escape(estateId)}`;
+    localConnection.query(deleteQuery, (error, rows, fields) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      console.log(">>> deleteQuery: ", deleteQuery);
+
+      let updateQuery = "insert into amenity_vs_estate values ";
+
+      amenities = amenities.filter(amenity => amenity.active == 1);
+
+      for (let i = 0; i < amenities.length; i++) {
+        let { id } = amenities[i];
+
+        updateQuery += `(${localConnection.escape(id)},${localConnection.escape(estateId)})`;
+        console.log(">>> Verification: ", (amenities.length - 1));
+        if (i < (amenities.length - 1)) {
+          updateQuery += ",";
+        }
+      }
+
+      console.log(">>> updateQuery: ", updateQuery);
+
+      localConnection.query(updateQuery, (error, rows, fields) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve("OK");
+      });
+    });
+  });
+
 const saveEstate = (
   id,
   title,
@@ -154,15 +192,12 @@ const saveEstate = (
         return;
       }
 
-      let message = "";
-
       try {
-        message = rows[0][0].message;
+        let { message, _id } = rows[0][0];
+        resolve({ message, _id });
       } catch (ex) {
         reject(ex);
       }
-
-      resolve(message);
     });
   });
 
@@ -176,5 +211,6 @@ module.exports = {
   getMunicipalities,
   getSectors,
   getAmenities,
+  updateAmenities,
   saveEstate
 };
