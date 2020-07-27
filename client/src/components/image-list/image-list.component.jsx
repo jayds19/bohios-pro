@@ -9,9 +9,9 @@ const ImageList = ({ name, items, handleRemove, ...otherProps }) => (
     <label>Galería</label>
     <div className="image-input">
       {items.map(item => (
-        <div key={item.id} className="list-item">
+        <div key={item.id} className={`list-item ${(item.remove === 1) ? 'hidden' : ''}`}>
           <span>{item.name}</span>
-          <div title="Remover" onClick={() => handleRemove(item.id)}>
+          <div title="Remover" onClick={() => handleRemove(item)}>
             <Icon tag="close" size="tiny" />
           </div>
         </div>

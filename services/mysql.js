@@ -201,6 +201,20 @@ const saveEstate = (
     });
   });
 
+const saveGallery = async (estateId, gallery) => {
+  for (let i = 0; i < gallery.length; i++) {
+    let { id, name, imageString, remove } = gallery[i];
+
+    if (remove == 1) {
+      await localQuery(`delete from gallery where id = ${id}`);
+    }
+
+    if (imageString != "" && imageString != undefined) {
+      await localQuery(`insert into gallery values (default,'${name}', ${estateId})`);
+    }
+  }
+};
+
 module.exports = {
   localConnection,
   localQuery,
@@ -212,5 +226,6 @@ module.exports = {
   getSectors,
   getAmenities,
   updateAmenities,
-  saveEstate
+  saveEstate,
+  saveGallery
 };

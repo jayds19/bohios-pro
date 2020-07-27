@@ -11,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ limit: "25mb", extended: true }));
 app.use(bodyParser.json({ limit: "25mb" }));
+app.use(express.static("public"));
 
 app.use("/api", estateRouter);
 //app.use("/bohios-pro", createProxyMiddleware({ target: `http://localhost:${PORT}`, changeOrigin: true }));

@@ -14,7 +14,7 @@ import CustomModal from "../../components/custom-modal/custom-modal.component";
 
 import "./estate.styles.scss";
 
-//TODO: Save images.
+//TODO: Loadign indicador.
 
 class Estate extends React.Component {
 
@@ -146,15 +146,19 @@ class Estate extends React.Component {
 
     fileReader.addEventListener("load", e => {
       let imageString = e.target.result;
-      let image = { id: Math.random(), name, imageString };
+      let image = { id: Math.random(), name, imageString, remove: 0 };
       this.setState({ gallery: [...this.state.gallery, image] });
     });
 
     fileReader.readAsDataURL(event.target.files[0]);
   }
 
-  handleImageRemoveClick = (id) => {
-    this.setState({ gallery: this.state.gallery.filter(item => (item.id !== id)) });
+  handleImageRemoveClick = (image) => {
+    if (image.imageString === "") {
+      this.setState({ gallery: this.state.gallery.map(item => (item.id == image.id ? ({ ...item, remove: 1 }) : item)) });
+    } else {
+      this.setState({ gallery: this.state.gallery.filter(item => (item.id != image.id)) });
+    }
   }
 
   handleCheckListClick = (id) => {
@@ -291,7 +295,7 @@ class Estate extends React.Component {
       console.error(ex.message);
     }
 
-    let { estate, amenities } = formResponse.data;
+    let { estate, amenities, gallery } = formResponse.data;
 
     let municipalities = await axios.get(`http://localhost:4000/api/estate/form/municipalities?id=${estate.provinceId}`)
       .then(res => res.data.municipalities)
@@ -301,7 +305,7 @@ class Estate extends React.Component {
       .then(res => res.data.sectors)
       .catch(ex => { console.error("Could not load sectors data."); return []; });
 
-    this.setState({ id, tabPosition: 1, amenities, municipalities, sectors, ...estate });
+    this.setState({ id, tabPosition: 1, amenities, municipalities, sectors, ...estate, gallery });
   }
 
   handleTab = async (tabPosition) => {

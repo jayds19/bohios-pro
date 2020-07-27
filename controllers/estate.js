@@ -10,8 +10,10 @@ const {
   updateAmenities,
   getMunicipalities,
   getSectors,
-  saveEstate
+  saveEstate,
+  saveGallery
 } = require("../services/mysql");
+const { saveGalleryImages } = require("../services/image");
 
 const getEstates = async (req, res) => {
 
@@ -80,6 +82,9 @@ const getEstate = async (req, res) => {
   let amenities = await getAmenities(id)
     .catch(ex => { console.log("Could not load amenities. ", ex); return []; });
 
+  let gallery = await localQuery("select id,img as name, '' as imageString from gallery;")
+    .catch(ex => { console.log("Could not load gallery. ", ex); return []; });
+
   let estate = estateRow[0];
 
   if (estate == undefined) {
@@ -87,7 +92,7 @@ const getEstate = async (req, res) => {
     return;
   }
 
-  res.send({ estate, amenities });
+  res.send({ estate, amenities, gallery });
 };
 
 const getEstateForm = async (req, res) => {
@@ -268,6 +273,7 @@ const postSaveEstate = async (req, res) => {
     return;
   }
 
+  //console.log("GALLERY: ", gallery);
   active = (active ? 1 : 0);
 
   let { message, _id } = await saveEstate(id,
@@ -292,8 +298,13 @@ const postSaveEstate = async (req, res) => {
   console.log(">>> MESSAGE: ", message);
 
   let amenitiesResponse = await updateAmenities(_id, amenities).catch(ex => { console.log("Could not save amenities. ", ex.message); return "FAIL"; });
-
   console.log(">>> Amenities response: ", amenitiesResponse);
+	
+	console.log(">>> gallery: ",gallery);
+  if (gallery.length > 0) {
+    await saveGallery(_id, gallery);
+    await saveGalleryImages(gallery);
+  }
 
   if (message) {
     res.send({ message });

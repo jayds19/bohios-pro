@@ -21,6 +21,10 @@
       border-radius: 5px;
       display: flex;
 
+      &.hidden {
+        display: none;
+      }
+
       span {
         width: 100%;
       }
