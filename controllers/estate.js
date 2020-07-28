@@ -1,4 +1,5 @@
 const { ERRORS, MESSAGES } = require("../config");
+const logService = require("../services/log");
 const {
   localConnection,
   localQuery,
@@ -41,7 +42,7 @@ const getEstates = async (req, res) => {
   order by e.id desc;`;
 
   let estates = await localQuery(query)
-    .catch(ex => { console.log("Could not load estates. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load estates. ", ex); return []; });
 
   res.send({ estates });
 };
@@ -77,13 +78,13 @@ const getEstate = async (req, res) => {
   from estate where id = ${localConnection.escape(id)}`;
 
   let estateRow = await localQuery(estateQuery)
-    .catch(ex => { console.log("Could not load estates. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load estates. ", ex); return []; });
 
   let amenities = await getAmenities(id)
-    .catch(ex => { console.log("Could not load amenities. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load amenities. ", ex); return []; });
 
   let gallery = await localQuery("select id,img as name, '' as imageString from gallery;")
-    .catch(ex => { console.log("Could not load gallery. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load gallery. ", ex); return []; });
 
   let estate = estateRow[0];
 
@@ -97,19 +98,19 @@ const getEstate = async (req, res) => {
 
 const getEstateForm = async (req, res) => {
   let contractTypes = await getContractTypes()
-    .catch(ex => { console.log("Could not load contractTypes. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load contractTypes. ", ex); return []; });
 
   let estateTypes = await getEstateTypes()
-    .catch(ex => { console.log("Could not load estateTypes. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load estateTypes. ", ex); return []; });
 
   let currencies = await getCurrencies()
-    .catch(ex => { console.log("Could not load currencyList. ", ex); return []; });
+		.catch(ex => { logService.error("Could not load currencyList. ", ex); return []});
 
   let provinces = await getProvinces()
-    .catch(ex => { console.log("Could not load provinces. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load provinces. ", ex); return []; });
 
   let amenities = await getAmenities()
-    .catch(ex => { console.log("Could not load amenities. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load amenities. ", ex); return []; });
 
   res.send({ contractTypes, estateTypes, currencies, provinces, amenities });
 };
@@ -123,7 +124,7 @@ const getEstateMunicipalities = async (req, res) => {
   }
 
   let municipalities = await getMunicipalities(id)
-    .catch(ex => { console.log("Could not load municipalities. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load municipalities. ", ex); return []; });
 
   res.send({ municipalities });
 }
@@ -137,7 +138,7 @@ const getEstateSectors = async (req, res) => {
   }
 
   let sectors = await getSectors(id)
-    .catch(ex => { console.log("Could not load sectors. ", ex); return []; });
+    .catch(ex => { logService.error("Could not load sectors. ", ex); return []; });
 
   res.send({ sectors });
 }
@@ -293,14 +294,12 @@ const postSaveEstate = async (req, res) => {
     currencyId,
     price,
     dateLimit,
-    active).catch(ex => { console.log("Could not save Estate. ", ex.message); return ""; });
+    active).catch(ex => { logService.error("Could not save Estate. ", ex.message); return ""; });
 
-  console.log(">>> MESSAGE: ", message);
 
   let amenitiesResponse = await updateAmenities(_id, amenities).catch(ex => { console.log("Could not save amenities. ", ex.message); return "FAIL"; });
   console.log(">>> Amenities response: ", amenitiesResponse);
 	
-	console.log(">>> gallery: ",gallery);
   if (gallery.length > 0) {
     await saveGallery(_id, gallery);
     await saveGalleryImages(gallery);

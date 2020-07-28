@@ -20,11 +20,11 @@ const saveGalleryImages = async (imageList) => {
 			let base64 = imageList[i].imageString.split(",")[1];
 			let name = imageList[i].name;
 
-			let response = await saveImage(name, base64).catch(ex => { console.log("Could not save image."); return "FAIL"; });
-			if (response != "OK") {
-				throw new Error("Could not save image.");
+			try{
+				await saveImage(name, base64);
+			} catch (ex) {
+				throw new Error("Could not save image. ", ex.message);
 			}
-			return response;
 		}
 	}
 };

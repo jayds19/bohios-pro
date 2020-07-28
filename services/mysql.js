@@ -116,8 +116,6 @@ const updateAmenities = (estateId, amenities) =>
         return;
       }
 
-      console.log(">>> deleteQuery: ", deleteQuery);
-
       let updateQuery = "insert into amenity_vs_estate values ";
 
       amenities = amenities.filter(amenity => amenity.active == 1);
@@ -126,13 +124,11 @@ const updateAmenities = (estateId, amenities) =>
         let { id } = amenities[i];
 
         updateQuery += `(${localConnection.escape(id)},${localConnection.escape(estateId)})`;
-        console.log(">>> Verification: ", (amenities.length - 1));
-        if (i < (amenities.length - 1)) {
+				
+				if (i < (amenities.length - 1)) {
           updateQuery += ",";
         }
       }
-
-      console.log(">>> updateQuery: ", updateQuery);
 
       localConnection.query(updateQuery, (error, rows, fields) => {
         if (error) {

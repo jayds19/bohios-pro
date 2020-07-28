@@ -6,7 +6,7 @@ import "./image-list.styles.scss";
 
 const ImageList = ({ name, items, handleRemove, ...otherProps }) => (
   <div className="image-list">
-    <label>Galería</label>
+		<label>Galería <span className="text-primary">{items.length}/10</span></label>
     <div className="image-input">
       {items.map(item => (
         <div key={item.id} className={`list-item ${(item.remove === 1) ? 'hidden' : ''}`}>

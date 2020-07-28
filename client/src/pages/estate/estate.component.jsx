@@ -11,10 +11,9 @@ import ImageList from "../../components/image-list/image-list.component";
 import CheckList from "../../components/check-list/check-list.component";
 import FormTab from "../../components/form-tab/form-tab.component";
 import CustomModal from "../../components/custom-modal/custom-modal.component";
+import LoadingIndicator from "../../components/loading-indicator/loading-indicator.component";
 
 import "./estate.styles.scss";
-
-//TODO: Loadign indicador.
 
 class Estate extends React.Component {
 
@@ -56,7 +55,8 @@ class Estate extends React.Component {
       estateTypeToFind: 0,
       modalIsOpen: false,
       modalType: "",
-      modalMessage: ""
+			modalMessage: "",
+			loadingVisible: false
     };
   }
 
@@ -114,7 +114,6 @@ class Estate extends React.Component {
     }
 
     if (name === "provinceId") {
-      console.log("inside");
       axios.get(`http://localhost:4000/api/estate/form/municipalities?id=${value}`)
         .then(res => {
           const { municipalities } = res.data;
@@ -123,7 +122,6 @@ class Estate extends React.Component {
     }
 
     if (name === "municipalityId") {
-      console.log("inside");
       axios.get(`http://localhost:4000/api/estate/form/sectors?id=${value}`)
         .then(res => {
           const { sectors } = res.data;
@@ -134,10 +132,20 @@ class Estate extends React.Component {
 
   handleGalleryChange = (event) => {
     let fileReader = new FileReader();
+		let name="";
+		let size=0;
 
-    console.log(">>> File: ", event.target.files[0]);
+		try{
+    	({ name, size } = event.target.files[0]);
+		} catch(ex) {
+			return;
+		}
+			const gallerySize = this.state.gallery.length;
 
-    const { name, size } = event.target.files[0];
+		if ( gallerySize >= 10) {
+			alert("Ha alcanzado el límite de imágenes en la galería.");
+			return;
+		}
 
     if (size > 2000000) {
       alert("La imagen no puede exceder los 2mb.");
@@ -180,6 +188,7 @@ class Estate extends React.Component {
 
   handleSaveSubmit = (e) => {
     e.preventDefault();
+		this.showLoadingIndicator();
     let {
       id,
       title,
@@ -235,10 +244,12 @@ class Estate extends React.Component {
           this.handleCleanForm();
         } else {
           this.showMessage("error", "No se pudo guardar cambios. No se pudo confirmar registro.");
-        }
+				}
+				this.hideLoadingIndicator();
       }).catch(ex => {
         console.error("Could not save estate.");
         this.showMessage("error", "No se pudo guardar cambios.");
+				this.hideLoadingIndicator();
       });
   }
 
@@ -287,12 +298,16 @@ class Estate extends React.Component {
 
   handleIdSelect = async (id) => {
     let formResponse = {};
+		
+		this.showLoadingIndicator();
 
     try {
       formResponse = await axios.get("http://localhost:4000/api/estate/form/estate?id=" + id);
     } catch (ex) {
       this.showMessage("error", "No se pudo cargar inmuble seleccionado.");
       console.error(ex.message);
+			this.hideLoadingIndicator();
+			return;
     }
 
     let { estate, amenities, gallery } = formResponse.data;
@@ -306,6 +321,7 @@ class Estate extends React.Component {
       .catch(ex => { console.error("Could not load sectors data."); return []; });
 
     this.setState({ id, tabPosition: 1, amenities, municipalities, sectors, ...estate, gallery });
+		this.hideLoadingIndicator();
   }
 
   handleTab = async (tabPosition) => {
@@ -328,13 +344,22 @@ class Estate extends React.Component {
 
   closeModal = () => {
     this.setState({ modalIsOpen: false });
-  }
+	}
+
+	showLoadingIndicator = () => {
+		this.setState({loadingVisible: true});
+	}
+
+	hideLoadingIndicator = () => {
+		this.setState({loadingVisible: false});
+	}
 
   render() {
     return (
       <div className="estate">
+				<LoadingIndicator visible={this.state.loadingVisible}/>
         <h2 className="title">Adminstración - Inmobiliarios</h2>
-        <div className="main-area">
+				<div className="main-area">
           <CustomModal isOpen={this.state.modalIsOpen} type={this.state.modalType} title="Mensaje" closeModal={this.closeModal}>
             {this.state.modalMessage}
           </CustomModal>
