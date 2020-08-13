@@ -7,7 +7,7 @@ import "./custom-modal.styles.scss";
 
 const CustomModal = ({ title, type, children, closeModal, ...otherProps }) => (
   <Modal ariaHideApp={false}
-    style={{ content: { width: "500px", boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.7)", margin: "0 auto" } }}
+    style={{ content: { width: "350px", boxShadow: "0px 1px 2px rgba(0, 0, 0, 0.7)", margin: "0 auto" } }}
     {...otherProps}
   >
     <div className="modal-header">

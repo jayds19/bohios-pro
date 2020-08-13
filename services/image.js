@@ -13,14 +13,18 @@ const saveImage = (name, data) =>
 const saveGalleryImages = async (imageList) => {
 	for (let i = 0; i < imageList.length; i++) {
 		if (imageList[i].remove == 1) {
-			fs.unlinkSync(`./public/gallery/${imageList[i].name}`);
+			try {
+				fs.unlinkSync(`./public/gallery/${imageList[i].name}`);
+			} catch (ex) {
+				console.log("Imagen a eliminar no encontrada.");
+			}
 		}
 
 		if (imageList[i].imageString != "" && imageList[i].imageString != undefined) {
 			let base64 = imageList[i].imageString.split(",")[1];
 			let name = imageList[i].name;
 
-			try{
+			try {
 				await saveImage(name, base64);
 			} catch (ex) {
 				throw new Error("Could not save image. ", ex.message);

@@ -11,6 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aframe": "^1.0.4",
+    "aframe-look-at-component": "^1.0.0",
+    "aframe-react": "^4.4.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",

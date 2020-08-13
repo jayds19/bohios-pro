@@ -9,6 +9,10 @@
   background-color: white;
   transition: background-color 0.2s;
 
+  &.small {
+    font-size: 14px;
+  }
+
   &:hover {
     cursor: pointer;
   }
@@ -20,6 +24,17 @@
   &.success {
     border: 2px solid #3cba54;
     background-color: #3cba54;
+    color: white;
+
+    &:active {
+      background-color: white;
+      color: #3cba54;
+    }
+  }
+
+   &.danger {
+    border: 2px solid #DD5246;
+    background-color: #DD5246;
     color: white;
 
     &:active {

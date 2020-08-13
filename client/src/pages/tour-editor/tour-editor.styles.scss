@@ -1,0 +1,116 @@
+.tour-editor {
+  background-color: white;
+  height: 500px;
+  width: 1200px;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+
+  .tour-editor-header {
+    color: gray;
+    font-size: 18pt;
+    padding: 5px;
+  }
+
+  .tour-editor-body {
+    height: 100%;
+    display: flex;
+
+    .editor-scene {
+      position: relative;
+
+      .editor-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 2;
+        background-color: white;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        display: flex;
+        height: 50px;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      a-scene {
+        display: block;
+        width: 900px;
+        height: 100%;
+      }
+    }
+
+    .editor-sidebar {
+      width: 300px;
+
+      .editor-input {
+        display: flex;
+        flex-direction: column;
+        background-color: lightgray;
+
+        & > div {
+          display: flex;
+        }
+      }
+
+      .editor-list {
+        background-color: whitesmoke;
+        overflow-y: auto;
+        height: 362px;
+
+        .list-item {
+          display: flex;
+          margin: 6px;
+          background-color: white;
+          box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+          border-radius: 5px;
+          overflow: hidden;
+          transition: all 0.3s;
+
+          &.selected {
+            box-shadow: 0px 0px 0px 5px hsla(35, 100%, 58%, 0.5);
+          }
+
+          &:hover {
+            cursor: pointer;
+          }
+
+          & > div:nth-child(1) {
+            width: 200px;
+
+            img {
+              width: 100%;
+              height: auto;
+            }
+          }
+
+          & > div:nth-child(2) {
+            width: 100%;
+            font-weight: bold;
+            padding: 2px;
+          }
+
+          & > div:nth-child(3) {
+            width: 30px;
+            display: flex;
+            align-items: center;
+
+            &:hover {
+              cursor: pointer;
+              color: #de5246;
+              transition: all 0.3s;
+            }
+          }
+        }
+      }
+    }
+  }
+}
