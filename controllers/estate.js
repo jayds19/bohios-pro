@@ -1,8 +1,7 @@
 const { ERRORS, MESSAGES } = require("../config");
 const logService = require("../services/log");
+const { localConnection, localQuery } = require("../services/estate");
 const {
-  localConnection,
-  localQuery,
   getContractTypes,
   getEstateTypes,
   getCurrencies,
@@ -12,23 +11,32 @@ const {
   getMunicipalities,
   getSectors,
   saveEstate,
-  saveGallery
-} = require("../services/mysql");
+  saveGallery,
+} = require("../services/estate");
 const { saveGalleryImages } = require("../services/image");
 
 const getEstates = async (req, res) => {
-
   let { title, contract_type, estate_type } = req.query;
 
   if (title == "" || title == undefined) {
     title = "";
   }
 
-  if (contract_type == "" || contract_type == "0" || contract_type == undefined || isNaN(contract_type)) {
+  if (
+    contract_type == "" ||
+    contract_type == "0" ||
+    contract_type == undefined ||
+    isNaN(contract_type)
+  ) {
     contract_type = "";
   }
 
-  if (estate_type == "" || estate_type == "0" || estate_type == undefined || isNaN(estate_type)) {
+  if (
+    estate_type == "" ||
+    estate_type == "0" ||
+    estate_type == undefined ||
+    isNaN(estate_type)
+  ) {
     estate_type = "";
   }
 
@@ -36,19 +44,32 @@ const getEstates = async (req, res) => {
   from estate e inner join contract_type ct on e.contract_type = ct.id
   inner join estate_type et on e.estate_type = et.id
   where e.id > 0
-  ${title != "" ? `and title like ${localConnection.escape('%' + title + '%')}` : ""}
-  ${contract_type != "" ? `and e.contract_type = ${localConnection.escape(contract_type)}` : ""}
-  ${estate_type != "" ? `and e.estate_type = ${localConnection.escape(estate_type)}` : ""}
+  ${
+    title != ""
+      ? `and title like ${localConnection.escape("%" + title + "%")}`
+      : ""
+  }
+  ${
+    contract_type != ""
+      ? `and e.contract_type = ${localConnection.escape(contract_type)}`
+      : ""
+  }
+  ${
+    estate_type != ""
+      ? `and e.estate_type = ${localConnection.escape(estate_type)}`
+      : ""
+  }
   order by e.id desc;`;
 
-  let estates = await localQuery(query)
-    .catch(ex => { logService.error("Could not load estates. ", ex); return []; });
+  let estates = await localQuery(query).catch((ex) => {
+    logService.error("Could not load estates. ", ex);
+    return [];
+  });
 
   res.send({ estates });
 };
 
 const getEstate = async (req, res) => {
-
   let { id } = req.query;
 
   if (id == "" || id == "0" || id == undefined || isNaN(id)) {
@@ -56,7 +77,7 @@ const getEstate = async (req, res) => {
     return;
   }
 
-  let estateQuery = `select 
+  let estateQuery = `select
   id,
   title,
   description,
@@ -77,14 +98,22 @@ const getEstate = async (req, res) => {
   active
   from estate where id = ${localConnection.escape(id)}`;
 
-  let estateRow = await localQuery(estateQuery)
-    .catch(ex => { logService.error("Could not load estates. ", ex); return []; });
+  let estateRow = await localQuery(estateQuery).catch((ex) => {
+    logService.error("Could not load estates. ", ex);
+    return [];
+  });
 
-  let amenities = await getAmenities(id)
-    .catch(ex => { logService.error("Could not load amenities. ", ex); return []; });
+  let amenities = await getAmenities(id).catch((ex) => {
+    logService.error("Could not load amenities. ", ex);
+    return [];
+  });
 
-  let gallery = await localQuery("select id,img as name, '' as imageString from gallery;")
-    .catch(ex => { logService.error("Could not load gallery. ", ex); return []; });
+  let gallery = await localQuery(
+    "select id,img as name, '' as imageString from gallery;"
+  ).catch((ex) => {
+    logService.error("Could not load gallery. ", ex);
+    return [];
+  });
 
   let estate = estateRow[0];
 
@@ -97,20 +126,30 @@ const getEstate = async (req, res) => {
 };
 
 const getEstateForm = async (req, res) => {
-  let contractTypes = await getContractTypes()
-    .catch(ex => { logService.error("Could not load contractTypes. ", ex); return []; });
+  let contractTypes = await getContractTypes().catch((ex) => {
+    logService.error("Could not load contractTypes. ", ex);
+    return [];
+  });
 
-  let estateTypes = await getEstateTypes()
-    .catch(ex => { logService.error("Could not load estateTypes. ", ex); return []; });
+  let estateTypes = await getEstateTypes().catch((ex) => {
+    logService.error("Could not load estateTypes. ", ex);
+    return [];
+  });
 
-  let currencies = await getCurrencies()
-		.catch(ex => { logService.error("Could not load currencyList. ", ex); return []});
+  let currencies = await getCurrencies().catch((ex) => {
+    logService.error("Could not load currencyList. ", ex);
+    return [];
+  });
 
-  let provinces = await getProvinces()
-    .catch(ex => { logService.error("Could not load provinces. ", ex); return []; });
+  let provinces = await getProvinces().catch((ex) => {
+    logService.error("Could not load provinces. ", ex);
+    return [];
+  });
 
-  let amenities = await getAmenities()
-    .catch(ex => { logService.error("Could not load amenities. ", ex); return []; });
+  let amenities = await getAmenities().catch((ex) => {
+    logService.error("Could not load amenities. ", ex);
+    return [];
+  });
 
   res.send({ contractTypes, estateTypes, currencies, provinces, amenities });
 };
@@ -123,11 +162,13 @@ const getEstateMunicipalities = async (req, res) => {
     return;
   }
 
-  let municipalities = await getMunicipalities(id)
-    .catch(ex => { logService.error("Could not load municipalities. ", ex); return []; });
+  let municipalities = await getMunicipalities(id).catch((ex) => {
+    logService.error("Could not load municipalities. ", ex);
+    return [];
+  });
 
   res.send({ municipalities });
-}
+};
 
 const getEstateSectors = async (req, res) => {
   let { id } = req.query;
@@ -137,11 +178,13 @@ const getEstateSectors = async (req, res) => {
     return;
   }
 
-  let sectors = await getSectors(id)
-    .catch(ex => { logService.error("Could not load sectors. ", ex); return []; });
+  let sectors = await getSectors(id).catch((ex) => {
+    logService.error("Could not load sectors. ", ex);
+    return [];
+  });
 
   res.send({ sectors });
-}
+};
 
 const postSaveEstate = async (req, res) => {
   let {
@@ -164,7 +207,8 @@ const postSaveEstate = async (req, res) => {
     dateLimit,
     active,
     amenities,
-    gallery } = req.body;
+    gallery,
+  } = req.body;
 
   if (id == undefined || id == "" || isNaN(id)) {
     id = 0;
@@ -236,7 +280,11 @@ const postSaveEstate = async (req, res) => {
     return;
   }
 
-  if (municipalityId == undefined || municipalityId == "" || isNaN(municipalityId)) {
+  if (
+    municipalityId == undefined ||
+    municipalityId == "" ||
+    isNaN(municipalityId)
+  ) {
     console.log("municipalityId | ", ERRORS.PARAM_ERROR);
     res.status(400).send({ error: ERRORS.PARAM_ERROR });
     return;
@@ -275,9 +323,10 @@ const postSaveEstate = async (req, res) => {
   }
 
   //console.log("GALLERY: ", gallery);
-  active = (active ? 1 : 0);
+  active = active ? 1 : 0;
 
-  let { message, _id } = await saveEstate(id,
+  let { message, _id } = await saveEstate(
+    id,
     title,
     description,
     geo_x,
@@ -294,12 +343,18 @@ const postSaveEstate = async (req, res) => {
     currencyId,
     price,
     dateLimit,
-    active).catch(ex => { logService.error("Could not save Estate. ", ex.message); return ""; });
+    active
+  ).catch((ex) => {
+    logService.error("Could not save Estate. ", ex.message);
+    return "";
+  });
 
-
-  let amenitiesResponse = await updateAmenities(_id, amenities).catch(ex => { console.log("Could not save amenities. ", ex.message); return "FAIL"; });
+  let amenitiesResponse = await updateAmenities(_id, amenities).catch((ex) => {
+    console.log("Could not save amenities. ", ex.message);
+    return "FAIL";
+  });
   console.log(">>> Amenities response: ", amenitiesResponse);
-	
+
   if (gallery.length > 0) {
     await saveGallery(_id, gallery);
     await saveGalleryImages(gallery);
@@ -310,7 +365,7 @@ const postSaveEstate = async (req, res) => {
   } else {
     res.status(500).send({ error: ERRORS.DB_ERROR });
   }
-}
+};
 
 module.exports = {
   getEstates,
@@ -318,5 +373,5 @@ module.exports = {
   getEstateForm,
   getEstateMunicipalities,
   getEstateSectors,
-  postSaveEstate
+  postSaveEstate,
 };

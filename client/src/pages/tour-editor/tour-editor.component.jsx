@@ -1,5 +1,7 @@
 import React from "react";
 import { Scene, Entity } from "aframe-react";
+import axios from "axios";
+import qs from "qs";
 import "aframe";
 import "aframe-look-at-component";
 
@@ -195,16 +197,16 @@ class TourEditor extends React.Component {
 
   handleRemoveLink = (element) => {
     let { selectedItem } = this.state;
-    selectedItem.destinationLinks = selectedItem.destinationLinks.filter(item => item.id !== element.id);
+    selectedItem.destinationLinks = selectedItem.destinationLinks.filter(
+      (item) => item.id !== element.id
+    );
 
     this.setState({
       selectedItem,
       tourList: this.state.tourList.map((item) =>
-        item.id === selectedItem.id
-          ? selectedItem
-          : item
+        item.id === selectedItem.id ? selectedItem : item
       ),
-      hoveredLinkElement: null
+      hoveredLinkElement: null,
     });
   };
 
@@ -212,10 +214,24 @@ class TourEditor extends React.Component {
     this.setState({ hoveredLinkElement: element });
   };
 
+  handleSubmit = (e) => {
+    e.preventDefault();
+    
+  };
+
   render() {
     return (
       <div className="tour-editor">
-        <div className="tour-editor-header">Editor de Tour</div>
+        <div className="tour-editor-header">
+          <h1>Editor de Tour</h1>
+          <CustomButton
+            text="Guardar Tour"
+            color="success"
+            small
+            icon="save"
+            disabled
+          />
+        </div>
         <div className="tour-editor-body">
           <div className="editor-sidebar">
             <form className="editor-input" onSubmit={this.handleAddItem}>
@@ -254,7 +270,7 @@ class TourEditor extends React.Component {
                   onClick={() => this.handleItemSelect(item)}
                   className={`list-item ${
                     this.checkSelectedFile(item) ? "selected" : ""
-                    }`}
+                  }`}
                   title="Seleccionar"
                 >
                   <div>
@@ -283,29 +299,26 @@ class TourEditor extends React.Component {
                   displayValue="title"
                 />
 
-                {this.state.hoveredLinkElement === null ? (
+                {this.state.editMode ? (
+                  <CustomButton
+                    text="Eliminar"
+                    color="danger"
+                    small
+                    onClick={() =>
+                      this.handleRemoveLink(this.state.hoveredLinkElement)
+                    }
+                    disabled={this.state.hoveredLinkElement === null}
+                  />
+                ) : (
                   <CustomButton
                     text="Agregar"
                     color="primary"
                     small
-                    onClick={() =>
-                      this.handleAddLink(this.state.pointElement)
-                    }
+                    onClick={() => this.handleAddLink(this.state.pointElement)}
                   />
-                ) : (
-                    <CustomButton
-                      text="Eliminar"
-                      color="danger"
-                      small
-                      onClick={() =>
-                        this.handleRemoveLink(this.state.hoveredLinkElement)
-                      }
-                    />
-                  )}
+                )}
                 <CustomButton
-                  text={
-                    this.state.editMode ? "Modo: Editar" : "Modo: Agregar"
-                  }
+                  text={this.state.editMode ? "Modo: Editar" : "Modo: Agregar"}
                   color="secondary"
                   small
                   onClick={() =>
@@ -364,22 +377,22 @@ class TourEditor extends React.Component {
               </Entity>
               {this.state.selectedItem !== null
                 ? this.state.selectedItem.destinationLinks.map((element) => (
-                  <Entity
-                    key={element.id}
-                    src="#tour_editor_enter"
-                    primitive="a-circle"
-                    rotation="0 0 0"
-                    radius="0.2"
-                    position={`${element.x} ${element.y} ${element.z}`}
-                    events={{
-                      mouseenter: () => this.handleCursorHover(element),
-                      mouseleave: () => this.handleCursorHover(null),
-                    }}
-                    animation__mouseenter="property: components.material.material.opacity; type: opacity; from: 1; to: 0.5; startEvents: mouseenter; dur: 200"
-                    animation__mouseleave="property: components.material.material.opacity; type: opacity; from: 0.5; to: 1; startEvents: mouseleave; dur: 200"
-                    look-at="[camera]"
-                  />
-                ))
+                    <Entity
+                      key={element.id}
+                      src="#tour_editor_enter"
+                      primitive="a-circle"
+                      rotation="0 0 0"
+                      radius="0.2"
+                      position={`${element.x} ${element.y} ${element.z}`}
+                      events={{
+                        mouseenter: () => this.handleCursorHover(element),
+                        mouseleave: () => this.handleCursorHover(null),
+                      }}
+                      animation__mouseenter="property: components.material.material.opacity; type: opacity; from: 1; to: 0.5; startEvents: mouseenter; dur: 200"
+                      animation__mouseleave="property: components.material.material.opacity; type: opacity; from: 0.5; to: 1; startEvents: mouseleave; dur: 200"
+                      look-at="[camera]"
+                    />
+                  ))
                 : null}
             </Scene>
           </div>

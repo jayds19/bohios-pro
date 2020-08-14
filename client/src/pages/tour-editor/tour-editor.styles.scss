@@ -14,8 +14,13 @@
 
   .tour-editor-header {
     color: gray;
-    font-size: 18pt;
     padding: 5px;
+    display: flex;
+    justify-content: space-between;
+    
+    h1 {
+      font-size: 18pt;
+    }
   }
 
   .tour-editor-body {
