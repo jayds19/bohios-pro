@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const estateRouter = require("./routes/estate");
+const tourRouter = require("./routes/tour");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(bodyParser.json({ limit: "25mb" }));
 app.use(express.static("public"));
 
 app.use("/api", estateRouter);
+app.use("/api", tourRouter);
 //app.use("/bohios-pro", createProxyMiddleware({ target: `http://localhost:${PORT}`, changeOrigin: true }));
 
 module.exports = app;

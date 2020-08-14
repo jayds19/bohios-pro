@@ -10,6 +10,8 @@ import FormSelect from "../../components/form-select/form-select.component";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import FileInput from "../../components/file-input/file-input.component";
 import Icon from "../../components/icon/icon.component";
+import CustomModal from "../../components/custom-modal/custom-modal.component";
+import LoadingIndicator from "../../components/loading-indicator/loading-indicator.component";
 
 import "./tour-editor.styles.scss";
 
@@ -28,10 +30,34 @@ class TourEditor extends React.Component {
       pointElement: null,
       editMode: false,
       hoveredLinkElement: null,
+      modalIsOpen: false,
+      modalMessage: "",
+      modalType: "",
+      loadingVisible: false,
     };
   }
 
   /*Functions*/
+
+  showMessage = (type, message) => {
+    this.setState({
+      modalIsOpen: true,
+      modalType: type,
+      modalMessage: message,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({ modalIsOpen: false });
+  };
+
+  showLoadingIndicator = () => {
+    this.setState({ loadingVisible: true });
+  };
+
+  hideLoadingIndicator = () => {
+    this.setState({ loadingVisible: false });
+  };
 
   getDestinationLinks = () =>
     this.state.tourList
@@ -98,7 +124,7 @@ class TourEditor extends React.Component {
       let image = { name, imageString };
       this.setState({ file: image });
     });
-
+    this.setState({ diskFile: event.target.files[0] });
     fileReader.readAsDataURL(event.target.files[0]);
   };
 
@@ -214,14 +240,48 @@ class TourEditor extends React.Component {
     this.setState({ hoveredLinkElement: element });
   };
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    
+  handleTourSave = async () => {
+    //this.showLoadingIndicator();
+
+    let { tourList } = this.state;
+
+    const config = {
+      onUploadProgress: progressEvent => console.log(progressEvent.loaded)
+    }
+
+    const response = await axios.post(
+      "http://localhost:4000/api/tour/save",
+      qs.stringify({ tourList }),
+      config
+    );
+    /*
+      .then((res) => {
+        const { message } = res.data;
+        this.showMessage("success", "Tour enviado");
+        this.setState({ display: "none" });
+        //this.hideLoadingIndicator();
+      })
+      .catch((ex) => {
+        console.error("Could not save tour.");
+        this.setState({ display: "none" });
+        //this.hideLoadingIndicator();
+        //this.showMessage("error", "No se pudo guardar cambios.");
+      });
+      */
   };
 
   render() {
     return (
       <div className="tour-editor">
+        <LoadingIndicator visible={this.state.loadingVisible} />
+        <CustomModal
+          isOpen={this.state.modalIsOpen}
+          type={this.state.modalType}
+          title="Mensaje"
+          closeModal={this.closeModal}
+        >
+          {this.state.modalMessage}
+        </CustomModal>
         <div className="tour-editor-header">
           <h1>Editor de Tour</h1>
           <CustomButton
@@ -229,7 +289,8 @@ class TourEditor extends React.Component {
             color="success"
             small
             icon="save"
-            disabled
+            disabled={(!this.state.tourList.length > 0)}
+            onClick={this.handleTourSave}
           />
         </div>
         <div className="tour-editor-body">
@@ -270,7 +331,7 @@ class TourEditor extends React.Component {
                   onClick={() => this.handleItemSelect(item)}
                   className={`list-item ${
                     this.checkSelectedFile(item) ? "selected" : ""
-                  }`}
+                    }`}
                   title="Seleccionar"
                 >
                   <div>
@@ -310,13 +371,13 @@ class TourEditor extends React.Component {
                     disabled={this.state.hoveredLinkElement === null}
                   />
                 ) : (
-                  <CustomButton
-                    text="Agregar"
-                    color="primary"
-                    small
-                    onClick={() => this.handleAddLink(this.state.pointElement)}
-                  />
-                )}
+                    <CustomButton
+                      text="Agregar"
+                      color="primary"
+                      small
+                      onClick={() => this.handleAddLink(this.state.pointElement)}
+                    />
+                  )}
                 <CustomButton
                   text={this.state.editMode ? "Modo: Editar" : "Modo: Agregar"}
                   color="secondary"
@@ -377,22 +438,22 @@ class TourEditor extends React.Component {
               </Entity>
               {this.state.selectedItem !== null
                 ? this.state.selectedItem.destinationLinks.map((element) => (
-                    <Entity
-                      key={element.id}
-                      src="#tour_editor_enter"
-                      primitive="a-circle"
-                      rotation="0 0 0"
-                      radius="0.2"
-                      position={`${element.x} ${element.y} ${element.z}`}
-                      events={{
-                        mouseenter: () => this.handleCursorHover(element),
-                        mouseleave: () => this.handleCursorHover(null),
-                      }}
-                      animation__mouseenter="property: components.material.material.opacity; type: opacity; from: 1; to: 0.5; startEvents: mouseenter; dur: 200"
-                      animation__mouseleave="property: components.material.material.opacity; type: opacity; from: 0.5; to: 1; startEvents: mouseleave; dur: 200"
-                      look-at="[camera]"
-                    />
-                  ))
+                  <Entity
+                    key={element.id}
+                    src="#tour_editor_enter"
+                    primitive="a-circle"
+                    rotation="0 0 0"
+                    radius="0.2"
+                    position={`${element.x} ${element.y} ${element.z}`}
+                    events={{
+                      mouseenter: () => this.handleCursorHover(element),
+                      mouseleave: () => this.handleCursorHover(null),
+                    }}
+                    animation__mouseenter="property: components.material.material.opacity; type: opacity; from: 1; to: 0.5; startEvents: mouseenter; dur: 200"
+                    animation__mouseleave="property: components.material.material.opacity; type: opacity; from: 0.5; to: 1; startEvents: mouseleave; dur: 200"
+                    look-at="[camera]"
+                  />
+                ))
                 : null}
             </Scene>
           </div>

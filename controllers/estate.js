@@ -1,6 +1,6 @@
 const { ERRORS, MESSAGES } = require("../config");
 const logService = require("../services/log");
-const { localConnection, localQuery } = require("../services/estate");
+const { localConnection, localQuery } = require("../services/mysql");
 const {
   getContractTypes,
   getEstateTypes,
@@ -48,17 +48,17 @@ const getEstates = async (req, res) => {
     title != ""
       ? `and title like ${localConnection.escape("%" + title + "%")}`
       : ""
-  }
+    }
   ${
     contract_type != ""
       ? `and e.contract_type = ${localConnection.escape(contract_type)}`
       : ""
-  }
+    }
   ${
     estate_type != ""
       ? `and e.estate_type = ${localConnection.escape(estate_type)}`
       : ""
-  }
+    }
   order by e.id desc;`;
 
   let estates = await localQuery(query).catch((ex) => {
