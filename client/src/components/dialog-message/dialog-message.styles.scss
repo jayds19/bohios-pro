@@ -1,0 +1,94 @@
+.dialog-message {
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  opacity: 0;
+  display: flex;
+  transform: scale(0);
+  flex-direction: column;
+  align-items: center;
+
+  &.show {
+    animation: showDialog 0.2s forwards;
+  }
+
+  &.hide {
+    animation: hideDialog 0.2s forwards;
+  }
+
+  .dialog-title {
+    display: block;
+    width: 100%;
+    position: relative;
+
+    div {
+      width: 100%;
+      padding: 10px;
+      font-size: 18pt;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 10px;
+      border: none;
+      background-color: transparent;
+      transition: all 0.2s;
+
+      &:hover {
+        color: #FFA52A;
+      }
+    }
+  }
+
+  .dialog-body {
+    width: 70%;
+    text-align: center;
+    height: 100%;
+    padding: 10px;
+    font-size: 16pt;
+    overflow-y: auto;
+
+    p {
+      color: #FFA52A !important;
+    }
+  }
+
+  .dialog-controls {
+    padding: 10px;
+    text-align: center;
+  }
+}
+
+@keyframes showDialog {
+  from {
+    opacity: 0;
+    transform: scale(0);
+    // display: none;
+  }
+
+  to {
+    // display: flex;
+    transform: scale(1);
+    opacity: 0.98;
+  }
+}
+
+@keyframes hideDialog {
+  from {
+    // display: flex;
+    transform: scale(1);
+    opacity: 0.98;
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0);
+    // display: none;
+  }
+}

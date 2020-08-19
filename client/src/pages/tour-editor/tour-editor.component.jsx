@@ -1,7 +1,7 @@
 import React from "react";
 import { Scene, Entity } from "aframe-react";
 import axios from "axios";
-import qs from "qs";
+//import qs from "qs";
 import "aframe";
 import "aframe-look-at-component";
 
@@ -10,8 +10,8 @@ import FormSelect from "../../components/form-select/form-select.component";
 import CustomButton from "../../components/custom-button/custom-button.component";
 import FileInput from "../../components/file-input/file-input.component";
 import Icon from "../../components/icon/icon.component";
-import CustomModal from "../../components/custom-modal/custom-modal.component";
-import LoadingIndicator from "../../components/loading-indicator/loading-indicator.component";
+import DialogMessage from "../../components/dialog-message/dialog-message.component";
+import LoadingScreen from "../../components/loading-screen/loading-screen.component";
 
 import "./tour-editor.styles.scss";
 
@@ -23,6 +23,7 @@ class TourEditor extends React.Component {
 
     this.state = {
       file: null,
+      fileString: "",
       title: "",
       selectedItem: null,
       tourList: [],
@@ -30,32 +31,22 @@ class TourEditor extends React.Component {
       pointElement: null,
       editMode: false,
       hoveredLinkElement: null,
-      modalIsOpen: false,
-      modalMessage: "",
-      modalType: "",
+      //Messages
+      dialogIsOpen: false,
+      dialogMessage: "",
+      dialogType: "",
       loadingVisible: false,
+      loadingProgress: 0
     };
   }
 
   /*Functions*/
 
-  showMessage = (type, message) => {
-    this.setState({
-      modalIsOpen: true,
-      modalType: type,
-      modalMessage: message,
-    });
-  };
-
-  closeModal = () => {
-    this.setState({ modalIsOpen: false });
-  };
-
-  showLoadingIndicator = () => {
+  showLoadingScreen = () => {
     this.setState({ loadingVisible: true });
   };
 
-  hideLoadingIndicator = () => {
+  hideLoadingScreen = () => {
     this.setState({ loadingVisible: false });
   };
 
@@ -112,7 +103,8 @@ class TourEditor extends React.Component {
       return;
     }
 
-    const extension = name.split(".")[1];
+    const nameArray = name.split(".");
+    const extension = nameArray[(nameArray.length - 1)];
 
     if (extension !== "jpg" && extension !== "jpeg" && extension !== "png") {
       alert("Esta imagen no es válida.");
@@ -121,30 +113,31 @@ class TourEditor extends React.Component {
 
     fileReader.addEventListener("load", (e) => {
       let imageString = e.target.result;
-      let image = { name, imageString };
-      this.setState({ file: image });
+      this.setState({ fileString: imageString });
     });
-    this.setState({ diskFile: event.target.files[0] });
+    this.setState({ file: event.target.files[0] });
     fileReader.readAsDataURL(event.target.files[0]);
   };
 
   handleRemoveFile = () => {
-    this.setState({ file: null });
+    this.setState({ file: null, fileString: "" });
   };
 
   handleAddItem = (e) => {
     e.preventDefault();
-    const { file, title, tourList } = this.state;
+    const { file, fileString, title, tourList } = this.state;
 
     if (file === null) {
       alert("Debe seleccionar una imagen.");
+      return;
     }
 
     let id = parseInt(Math.random() * 1000000);
 
     this.setState({
-      tourList: [...tourList, { id, title, file, destinationLinks: [] }],
+      tourList: [...tourList, { id, title, file, fileString, destinationLinks: [] }],
       file: null,
+      fileString: "",
       title: "",
     });
   };
@@ -178,10 +171,6 @@ class TourEditor extends React.Component {
     if (item.id !== selectedItem.id) {
       this.setState({ selectedItem: item });
     }
-  };
-
-  handleAssetsLoad = () => {
-    alert("Cargado!!!");
   };
 
   //Gets the clicked position to genereate the new item.
@@ -240,48 +229,60 @@ class TourEditor extends React.Component {
     this.setState({ hoveredLinkElement: element });
   };
 
+  showDialogMessage = (type, message) => {
+    this.setState({ dialogType: type, dialogMessage: message, dialogIsOpen: true });
+  };
+
+  hideDialogMessage = () => {
+    this.setState({ dialogType: "", dialogMessage: "", dialogIsOpen: false });
+  };
+
   handleTourSave = async () => {
-    //this.showLoadingIndicator();
+    this.showLoadingScreen();
 
     let { tourList } = this.state;
+    let tempTourList = [];//tempTourList is the one that will be sent to the server.
 
-    const config = {
-      onUploadProgress: progressEvent => console.log(progressEvent.loaded)
+    let data = new FormData();
+
+    for (let i = 0; i < tourList.length; i++) {
+      data.append("file", tourList[i].file);
+
+      let { id, title, destinationLinks } = tourList[i];
+      tempTourList.push({ id, title, destinationLinks });
     }
 
-    const response = await axios.post(
-      "http://localhost:4000/api/tour/save",
-      qs.stringify({ tourList }),
-      config
-    );
-    /*
-      .then((res) => {
-        const { message } = res.data;
-        this.showMessage("success", "Tour enviado");
-        this.setState({ display: "none" });
-        //this.hideLoadingIndicator();
-      })
-      .catch((ex) => {
-        console.error("Could not save tour.");
-        this.setState({ display: "none" });
-        //this.hideLoadingIndicator();
-        //this.showMessage("error", "No se pudo guardar cambios.");
+    data.append("tourList", tempTourList);
+
+    const config = {
+      onUploadProgress: p => {
+        this.setState({ loadingProgress: ((p.loaded / p.total) * 100) });
+      }
+    }
+
+    axios.post("http://localhost:4000/api/tour/save", data, config)
+      .then(response => {
+        console.log("Response: ", response);
+        this.hideLoadingScreen();
+
+        this.showDialogMessage("success", "Tour guardado");
+      }).catch(error => {
+        console.error("Cannot save tour.", error);
+        this.hideLoadingScreen();
+        this.showDialogMessage("error", "No se pudo guardar tour");
       });
-      */
   };
 
   render() {
     return (
       <div className="tour-editor">
-        <LoadingIndicator visible={this.state.loadingVisible} />
-        <CustomModal
-          isOpen={this.state.modalIsOpen}
-          type={this.state.modalType}
-          title="Mensaje"
-          closeModal={this.closeModal}
-        >
-          {this.state.modalMessage}
-        </CustomModal>
+        <LoadingScreen isOpen={this.state.loadingVisible} progress={this.state.loadingProgress} />
+        <DialogMessage
+          type={this.state.dialogType}
+          message={this.state.dialogMessage}
+          handleClose={this.hideDialogMessage}
+          isOpen={this.state.dialogIsOpen}
+        />
         <div className="tour-editor-header">
           <h1>Editor de Tour</h1>
           <CustomButton
@@ -335,7 +336,7 @@ class TourEditor extends React.Component {
                   title="Seleccionar"
                 >
                   <div>
-                    <img src={item.file.imageString} alt={item.title} />
+                    <img src={item.fileString} alt={item.title} />
                   </div>
                   <div>{item.title}</div>
                   <div
@@ -398,12 +399,12 @@ class TourEditor extends React.Component {
                   src="/icons/tour_editor_enter.png"
                   alt="Enter icon"
                 />
-                {this.state.tourList.map(({ id, title, file }) => (
+                {this.state.tourList.map(({ id, title, fileString }) => (
                   <img
                     key={id}
                     alt={title}
                     id={title.replace(/ /g, "_")}
-                    src={file.imageString}
+                    src={fileString}
                   />
                 ))}
               </Entity>
