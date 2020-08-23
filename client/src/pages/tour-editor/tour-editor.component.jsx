@@ -43,11 +43,11 @@ class TourEditor extends React.Component {
   /*Functions*/
 
   showLoadingScreen = () => {
-    this.setState({ loadingVisible: true });
+    this.setState({ loadingVisible: true, progress: 0 });
   };
 
   hideLoadingScreen = () => {
-    this.setState({ loadingVisible: false });
+    this.setState({ loadingVisible: false, progress: 0 });
   };
 
   getDestinationLinks = () =>
@@ -132,6 +132,11 @@ class TourEditor extends React.Component {
       return;
     }
 
+    if (tourList.length >= 15) {
+      alert("Ha alcanzado el límite de elementos en el tour.");
+      return;
+    }
+
     let id = parseInt(Math.random() * 1000000);
 
     this.setState({
@@ -161,14 +166,14 @@ class TourEditor extends React.Component {
   };
 
   handleItemSelect = (item) => {
-    const { selectedItem } = this.state;
+    let { selectedItem, tourList } = this.state;
 
-    if (selectedItem === null) {
-      this.setState({ selectedItem: item });
-      return;
-    }
-
-    if (item.id !== selectedItem.id) {
+    if (selectedItem !== null) {
+      this.setState({
+        selectedItem: item,
+        tourList: tourList.map(item => (item.id === selectedItem.id ? selectedItem : item))
+      });
+    } else {
       this.setState({ selectedItem: item });
     }
   };
@@ -179,34 +184,24 @@ class TourEditor extends React.Component {
 
     let element = { x, y, z };
 
-    let id = parseInt(Math.random() * 1000000);
-    element.id = id;
-
     this.setState({
       pointElement: element,
     });
   };
 
   //Add the generated element to destinationLinks.
-  handleAddLink = (element) => {
-    if (this.state.link === "" || element === null) {
+  //TODO: Test the link add.
+  handleAddLink = () => {
+    let { link, pointElement, selectedItem } = this.state;
+    if (link === "" || pointElement === null) {
       alert("Debe elegir un destino antes de agregar.");
       return;
     }
 
-    element.link = this.state.link;
-    let { selectedItem } = this.state;
+    const id = parseInt(Math.random() * 1000000);
 
     this.setState({
-      tourList: this.state.tourList.map((item) =>
-        item.id === selectedItem.id
-          ? { ...item, destinationLinks: [...item.destinationLinks, element] }
-          : item
-      ),
-      selectedItem: {
-        ...selectedItem,
-        destinationLinks: [...selectedItem.destinationLinks, element],
-      },
+      selectedItem: { ...selectedItem, destinationLinks: [...selectedItem.destinationLinks, { id, link, ...pointElement }] },
     });
   };
 
@@ -264,7 +259,6 @@ class TourEditor extends React.Component {
       .then(response => {
         console.log("Response: ", response);
         this.hideLoadingScreen();
-
         this.showDialogMessage("success", "Tour guardado");
       }).catch(error => {
         console.error("Cannot save tour.", error);
@@ -284,10 +278,17 @@ class TourEditor extends React.Component {
           isOpen={this.state.dialogIsOpen}
         />
         <div className="tour-editor-header">
-          <h1>Editor de Tour</h1>
+          <CustomButton
+            text="Inmuebles"
+            color="secondary"
+            small
+            icon="arrow_back"
+            onClick={() => this.props.history.push("/admin/estate/")}
+          />
+          <h1><Icon tag="3d_rotation" /> Editor de Tour</h1>
           <CustomButton
             text="Guardar Tour"
-            color="success"
+            color="primary"
             small
             icon="save"
             disabled={(!this.state.tourList.length > 0)}
@@ -316,6 +317,7 @@ class TourEditor extends React.Component {
                   small
                   required
                 />
+                <span>{this.state.tourList.length}/15</span>
                 <CustomButton
                   type="submit"
                   icon="add"
@@ -376,7 +378,7 @@ class TourEditor extends React.Component {
                       text="Agregar"
                       color="primary"
                       small
-                      onClick={() => this.handleAddLink(this.state.pointElement)}
+                      onClick={() => this.handleAddLink()}
                     />
                   )}
                 <CustomButton
@@ -389,7 +391,7 @@ class TourEditor extends React.Component {
                 />
               </div>
             ) : null}
-            <Scene embedded vr-mode-ui="enabled: false">
+            <Scene embedded vr-mode-ui="enabled: false" light="defaultLightsEnabled: false">
               <Entity
                 primitive="a-assets"
                 events={{ loaded: () => console.log("Loaded") }}

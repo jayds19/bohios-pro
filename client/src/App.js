@@ -13,7 +13,7 @@ function App() {
       <Header />
       <Switch>
         <Route exact path="/admin/estate" component={EstatePage} />
-        <Route exact path="/admin/estate/tour-editor" component={TourEditor} />
+        <Route exact path="/admin/estate/tour-editor/:id" component={TourEditor} />
       </Switch>
     </div>
   );

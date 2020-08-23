@@ -45,23 +45,19 @@ CREATE TABLE IF NOT EXISTS `amenity_vs_estate` (
   PRIMARY KEY (`amenity_id`,`estate_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table bohios-pro.amenity_vs_estate: ~4 rows (approximately)
+-- Dumping data for table bohios-pro.amenity_vs_estate: ~10 rows (approximately)
 /*!40000 ALTER TABLE `amenity_vs_estate` DISABLE KEYS */;
 INSERT INTO `amenity_vs_estate` (`amenity_id`, `estate_id`) VALUES
-	(1, 3),
 	(1, 4),
 	(2, 3),
 	(2, 4),
 	(3, 3),
-	(3, 4),
 	(4, 1),
 	(4, 3),
 	(5, 3),
 	(6, 3),
 	(7, 3),
-	(8, 3),
-	(9, 3),
-	(10, 3);
+	(8, 3);
 /*!40000 ALTER TABLE `amenity_vs_estate` ENABLE KEYS */;
 
 -- Dumping structure for table bohios-pro.contract_type
@@ -119,8 +115,8 @@ CREATE TABLE IF NOT EXISTS `estate` (
 -- Dumping data for table bohios-pro.estate: ~2 rows (approximately)
 /*!40000 ALTER TABLE `estate` DISABLE KEYS */;
 INSERT INTO `estate` (`id`, `title`, `description`, `geo_x`, `geo_y`, `bedrooms`, `bathrooms`, `parking`, `tour_id`, `contract_type`, `estate_type`, `province_id`, `municipality_id`, `sector_id`, `currency_id`, `price`, `date_limit`, `active`) VALUES
-	(3, 'Apartamento Viejo', 'Apartamento en 3er nivel.', '19.484023', '-70.712379', 2, 1, 1, 0, 3, 1, '25', '250101', '2501010102001', 1, 12000.00, '2020-07-31', 1),
-	(4, 'Apartamento Nuevo', 'Apartamento en 3er nivel.', '19.484023', '-70.712379', 2, 1, 1, 0, 2, 2, '25', '250101', '2501010102001', 1, 12000.00, '2020-07-31', 1);
+	(3, 'Apartamento Viejo', 'Apartamento en 3er nivel nuevo.', '19.484023', '-70.712379', 2, 1, 1, 0, 3, 1, '25', '250101', '2501010600200', 1, 12000.00, '2020-07-31', 1),
+	(4, 'Apartamento 3r Nivel Nuevo', 'Apartamento en 3er nivel.', '19.484023', '-70.712379', 2, 1, 1, 0, 2, 2, '25', '250101', '2501010102001', 1, 12000.00, '2020-07-31', 1);
 /*!40000 ALTER TABLE `estate` ENABLE KEYS */;
 
 -- Dumping structure for table bohios-pro.estate_type
@@ -144,10 +140,13 @@ CREATE TABLE IF NOT EXISTS `gallery` (
   `img` varchar(256) NOT NULL,
   `estate_id` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table bohios-pro.gallery: ~0 rows (approximately)
+-- Dumping data for table bohios-pro.gallery: ~2 rows (approximately)
 /*!40000 ALTER TABLE `gallery` DISABLE KEYS */;
+INSERT INTO `gallery` (`id`, `img`, `estate_id`) VALUES
+	(7, 'gallery_1.jpg', 4),
+	(8, 'gallery_2.jpg', 4);
 /*!40000 ALTER TABLE `gallery` ENABLE KEYS */;
 
 -- Dumping structure for table bohios-pro.municipality_district

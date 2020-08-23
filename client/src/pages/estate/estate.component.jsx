@@ -10,7 +10,7 @@ import CustomButton from "../../components/custom-button/custom-button.component
 import ImageList from "../../components/image-list/image-list.component";
 import CheckList from "../../components/check-list/check-list.component";
 import FormTab from "../../components/form-tab/form-tab.component";
-import CustomModal from "../../components/custom-modal/custom-modal.component";
+import DialogMessage from "../../components/dialog-message/dialog-message.component";
 import LoadingIndicator from "../../components/loading-indicator/loading-indicator.component";
 
 import "./estate.styles.scss";
@@ -55,18 +55,19 @@ class Estate extends React.Component {
 			titleToFind: "",
 			contractTypeToFind: 0,
 			estateTypeToFind: 0,
-			modalIsOpen: false,
-			modalType: "",
-			modalMessage: "",
+			//Messages
+			dialogIsOpen: false,
+			dialogType: "",
+			dialogMessage: "",
 			loadingVisible: false
 		};
 	}
 
 	showMessage = (type, message) => {
 		this.setState({
-			modalIsOpen: true,
-			modalType: type,
-			modalMessage: message
+			dialogIsOpen: true,
+			dialogType: type,
+			dialogMessage: message
 		});
 	}
 
@@ -360,7 +361,7 @@ class Estate extends React.Component {
 	}
 
 	closeModal = () => {
-		this.setState({ modalIsOpen: false });
+		this.setState({ dialogIsOpen: false });
 	}
 
 	showLoadingIndicator = () => {
@@ -375,11 +376,14 @@ class Estate extends React.Component {
 		return (
 			<div className="estate">
 				<LoadingIndicator visible={this.state.loadingVisible} />
+				<DialogMessage
+					isOpen={this.state.dialogIsOpen}
+					type={this.state.dialogType}
+					message={this.state.dialogMessage}
+					handleClose={this.closeModal}
+				/>
 				<h2 className="title">Adminstración - Inmobiliarios</h2>
 				<div className="main-area">
-					<CustomModal isOpen={this.state.modalIsOpen} type={this.state.modalType} title="Mensaje" closeModal={this.closeModal}>
-						{this.state.modalMessage}
-					</CustomModal>
 					<FormSidebar current={1} />
 					<div className="form-area">
 						<FormTab handleTab={this.handleTab} tabPosition={this.state.tabPosition} />
@@ -543,6 +547,14 @@ class Estate extends React.Component {
 										/>
 									</div>
 									<div className="form-col">
+										<CustomButton
+											text="Editar Tour"
+											color="secondary"
+											icon="3d_rotation"
+											disabled={(this.state.id === 0)}
+											onClick={() => this.props.history.push(`${this.props.match.url}tour-editor/${this.state.id}`)}
+											title={(this.state.id === 0 ? "Debe guardar este inmueble para editar Tour" : "")}
+										/>
 										<ImageList
 											name="imageList"
 											onChange={this.handleGalleryChange}

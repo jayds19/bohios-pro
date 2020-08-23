@@ -5,8 +5,8 @@ import Icon from "../icon/icon.component";
 
 import "./dialog-message.styles.scss";
 
-const DialogMessage = ({ type, message, isOpen, handleClose }) => (
-  <div className={`dialog-message ${isOpen ? "show" : "hide"}`}>
+const DialogMessage = ({ type, message, isOpen, fullScreen, handleClose }) => (
+  <div className={`dialog-message ${fullScreen ? "full-screen" : ""} ${isOpen ? "show" : "hide"}`}>
     <div className="dialog-title">
       <div>
         {(type === "success") ? "COMPLETADO" : null}

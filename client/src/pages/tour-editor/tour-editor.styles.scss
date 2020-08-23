@@ -13,7 +13,9 @@
   user-select: none;
 
   .tour-editor-header {
-    color: gray;
+    border-top: 3px solid #FFA52A;
+    color: #FFA52A;
+    background-color: whitesmoke;
     padding: 5px;
     display: flex;
     justify-content: space-between;
