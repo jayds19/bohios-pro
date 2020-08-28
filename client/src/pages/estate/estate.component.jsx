@@ -552,7 +552,7 @@ class Estate extends React.Component {
 											color="secondary"
 											icon="3d_rotation"
 											disabled={(this.state.id === 0)}
-											onClick={() => this.props.history.push(`${this.props.match.url}tour-editor/${this.state.id}`)}
+											onClick={() => this.props.history.push(`${this.props.match.path}/tour-editor/${this.state.id}`)}
 											title={(this.state.id === 0 ? "Debe guardar este inmueble para editar Tour" : "")}
 										/>
 										<ImageList

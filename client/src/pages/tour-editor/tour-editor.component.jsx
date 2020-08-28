@@ -15,13 +15,14 @@ import LoadingScreen from "../../components/loading-screen/loading-screen.compon
 
 import "./tour-editor.styles.scss";
 
-//TODO: Guardar tour en bd.
+//TODO: Save tour into db.
 
 class TourEditor extends React.Component {
   constructor() {
     super();
 
     this.state = {
+      id: 0, //estate id reference.
       file: null,
       fileString: "",
       title: "",
@@ -39,6 +40,23 @@ class TourEditor extends React.Component {
       loadingProgress: 0
     };
   }
+
+  componentDidMount = () => {
+    const { match } = this.props;
+
+    if (isNaN(match.params.id) || match.params.id === undefined) {
+      alert("Inmueble no válido.");
+      this.props.history.push("/admin/estate");
+      return;
+    }
+
+    axios.get(`http://localhost:4000/api/tour?id=${match.params.id}`).then(success => {
+      this.setState({ id: match.params.id });
+    }).catch(err => {
+      alert("Inmueble no válido.");
+      this.props.history.push("/admin/estate");
+    });
+  };
 
   /*Functions*/
 
@@ -83,7 +101,6 @@ class TourEditor extends React.Component {
 
   handleChange = (event) => {
     const { value, name } = event.target;
-
     this.setState({ [name]: value });
   };
 
@@ -98,15 +115,15 @@ class TourEditor extends React.Component {
       return;
     }
 
-    if (size > 15000000) {
-      alert("La imagen no puede exceder los 15mb.");
+    if (size > 25000000) {
+      alert("La imagen no puede exceder los 25mb.");
       return;
     }
 
     const nameArray = name.split(".");
     const extension = nameArray[(nameArray.length - 1)];
 
-    if (extension !== "jpg" && extension !== "jpeg" && extension !== "png") {
+    if (extension !== "jpg" && extension !== "jpeg" && extension !== "png" && extension !== "tif") {
       alert("Esta imagen no es válida.");
       return;
     }
@@ -166,12 +183,11 @@ class TourEditor extends React.Component {
   };
 
   handleItemSelect = (item) => {
-    let { selectedItem, tourList } = this.state;
+    let { selectedItem } = this.state;
 
     if (selectedItem !== null) {
       this.setState({
-        selectedItem: item,
-        tourList: tourList.map(item => (item.id === selectedItem.id ? selectedItem : item))
+        selectedItem: item
       });
     } else {
       this.setState({ selectedItem: item });
@@ -190,18 +206,25 @@ class TourEditor extends React.Component {
   };
 
   //Add the generated element to destinationLinks.
-  //TODO: Test the link add.
   handleAddLink = () => {
-    let { link, pointElement, selectedItem } = this.state;
+    let { link, pointElement, selectedItem, tourList } = this.state;
     if (link === "" || pointElement === null) {
       alert("Debe elegir un destino antes de agregar.");
       return;
     }
 
+    if (selectedItem.destinationLinks.length >= 5) {
+      alert("No puede agregar más de 5 enlaces por escena.");
+      return;
+    }
+
     const id = parseInt(Math.random() * 1000000);
 
+    let updatedItem = { ...selectedItem, destinationLinks: [...selectedItem.destinationLinks, { id, link, ...pointElement }] };
+
     this.setState({
-      selectedItem: { ...selectedItem, destinationLinks: [...selectedItem.destinationLinks, { id, link, ...pointElement }] },
+      selectedItem: updatedItem,
+      tourList: tourList.map(item => (item.id === updatedItem.id ? updatedItem : item))
     });
   };
 
@@ -235,7 +258,7 @@ class TourEditor extends React.Component {
   handleTourSave = async () => {
     this.showLoadingScreen();
 
-    let { tourList } = this.state;
+    let { id, tourList } = this.state;
     let tempTourList = [];//tempTourList is the one that will be sent to the server.
 
     let data = new FormData();
@@ -244,10 +267,12 @@ class TourEditor extends React.Component {
       data.append("file", tourList[i].file);
 
       let { id, title, destinationLinks } = tourList[i];
-      tempTourList.push({ id, title, destinationLinks });
+      let { name } = tourList[i].file;
+      tempTourList.push({ id, title, fileName: name, destinationLinks });
     }
 
-    data.append("tourList", tempTourList);
+    data.append("tourList", JSON.stringify(tempTourList));
+    data.append("id", id);
 
     const config = {
       onUploadProgress: p => {
@@ -283,7 +308,7 @@ class TourEditor extends React.Component {
             color="secondary"
             small
             icon="arrow_back"
-            onClick={() => this.props.history.push("/admin/estate/")}
+            onClick={() => this.props.history.push("/admin/estate")}
           />
           <h1><Icon tag="3d_rotation" /> Editor de Tour</h1>
           <CustomButton
@@ -314,10 +339,11 @@ class TourEditor extends React.Component {
                   placeholder="Título"
                   handleChange={this.handleChange}
                   value={this.state.title}
+                  width="160"
                   small
                   required
                 />
-                <span>{this.state.tourList.length}/15</span>
+                <span style={{ display: "flex", alignItems: "center" }}>{this.state.tourList.length}/15</span>
                 <CustomButton
                   type="submit"
                   icon="add"
@@ -391,7 +417,7 @@ class TourEditor extends React.Component {
                 />
               </div>
             ) : null}
-            <Scene embedded vr-mode-ui="enabled: false" light="defaultLightsEnabled: false">
+            <Scene embedded vr-mode-ui="enabled: false">
               <Entity
                 primitive="a-assets"
                 events={{ loaded: () => console.log("Loaded") }}
@@ -411,6 +437,7 @@ class TourEditor extends React.Component {
                 ))}
               </Entity>
               <Entity primitive="a-sky" src={this.getSelectedImage()} />
+              <Entity light="type: ambient; color: #FFF; angle:360;" />
               <Entity
                 primitive="a-camera"
                 look-controls={{ enabled: "true", pointerLockEnabled: "false" }}
