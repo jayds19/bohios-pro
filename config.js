@@ -3,7 +3,7 @@ module.exports = {
   mysqlConfig: {
     host: "localhost",
     user: "root",
-    password: "941019",
+    password: "Local@941019",
     database: "bohios-pro",
     dateStrings: true
   },

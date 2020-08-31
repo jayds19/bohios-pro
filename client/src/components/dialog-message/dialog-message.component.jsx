@@ -5,26 +5,30 @@ import Icon from "../icon/icon.component";
 
 import "./dialog-message.styles.scss";
 
-const DialogMessage = ({ type, message, isOpen, fullScreen, handleClose }) => (
+// TODO: Handle on success and on reject events.
+
+const DialogMessage = ({ type, message, isOpen, fullScreen, handleClose, handleSuccess }) => (
   <div className={`dialog-message ${fullScreen ? "full-screen" : ""} ${isOpen ? "show" : "hide"}`}>
     <div className="dialog-title">
       <div>
-        {(type === "success") ? "COMPLETADO" : null}
-        {(type === "error") ? "ERROR" : null}
-        {(type === "info") ? "INFORMACIÓN" : null}
+        {type === "success" ? "COMPLETADO" : null}
+        {type === "error" ? "ERROR" : null}
+        {type === "info" ? "INFORMACIÓN" : null}
       </div>
-      <button onClick={handleClose}><Icon tag="close" /></button>
+      <button onClick={handleClose}>
+        <Icon tag="close" />
+      </button>
     </div>
     <div className="dialog-body">
       <p>
-        {(type === "success") ? <Icon tag="check_circle" size="medium" /> : null}
-        {(type === "error") ? <Icon tag="cancel" size="medium" /> : null}
-        {(type === "info") ? <Icon tag="info" size="medium" /> : null}
+        {type === "success" ? <Icon tag="check_circle" size="medium" /> : null}
+        {type === "error" ? <Icon tag="cancel" size="medium" /> : null}
+        {type === "info" ? <Icon tag="info" size="medium" /> : null}
       </p>
-      {(message !== undefined) ? message.toUpperCase() : ""}
+      {message !== undefined ? message.toUpperCase() : ""}
     </div>
     <div className="dialog-controls">
-      <CustomButton text="Entendido" color="primary" onClick={handleClose} />
+      {type === "success" ? <CustomButton text="Entendido" color="primary" onClick={handleSuccess} /> : <CustomButton text="Entendido" color="primary" onClick={handleClose} />}
     </div>
   </div>
 );

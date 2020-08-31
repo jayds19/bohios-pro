@@ -16,7 +16,11 @@ const localQuery = (query) =>
     });
   });
 
+  const test = (nombre, edad) => {
+    return `Hola ${nombre}`;
+  };
+
 module.exports = {
   localConnection,
-  localQuery,
+  localQuery
 };

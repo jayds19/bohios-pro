@@ -15,7 +15,7 @@ import LoadingScreen from "../../components/loading-screen/loading-screen.compon
 
 import "./tour-editor.styles.scss";
 
-//TODO: Save tour into db.
+//TODO: Optimize image load.
 
 class TourEditor extends React.Component {
   constructor() {
@@ -37,7 +37,7 @@ class TourEditor extends React.Component {
       dialogMessage: "",
       dialogType: "",
       loadingVisible: false,
-      loadingProgress: 0
+      loadingProgress: 0,
     };
   }
 
@@ -50,12 +50,25 @@ class TourEditor extends React.Component {
       return;
     }
 
-    axios.get(`http://localhost:4000/api/tour?id=${match.params.id}`).then(success => {
-      this.setState({ id: match.params.id });
-    }).catch(err => {
-      alert("Inmueble no válido.");
-      this.props.history.push("/admin/estate");
-    });
+    axios
+      .get(`http://localhost:4000/api/tour?id=${match.params.id}`)
+      .then((success) => {
+        console.log(success.data);
+        //[...tourList, { id, title, file, fileString, destinationLinks: [] }]
+        let { tourScenes } = success.data;
+
+        this.setState({
+          id: match.params.id,
+          tourList: tourScenes.map((item) => ({
+            ...item,
+            file: null,
+          })),
+        });
+      })
+      .catch((err) => {
+        alert("Inmueble no válido.");
+        this.props.history.push("/admin/estate");
+      });
   };
 
   /*Functions*/
@@ -68,10 +81,7 @@ class TourEditor extends React.Component {
     this.setState({ loadingVisible: false, progress: 0 });
   };
 
-  getDestinationLinks = () =>
-    this.state.tourList
-      .map((item) => ({ id: item.id, title: item.title }))
-      .filter((item) => item.id !== this.state.selectedItem.id);
+  getDestinationLinks = () => this.state.tourList.map((item) => ({ id: item.id, title: item.title })).filter((item) => item.id !== this.state.selectedItem.id);
 
   checkSelectedFile = (item) => {
     const { selectedItem } = this.state;
@@ -121,7 +131,7 @@ class TourEditor extends React.Component {
     }
 
     const nameArray = name.split(".");
-    const extension = nameArray[(nameArray.length - 1)];
+    const extension = nameArray[nameArray.length - 1];
 
     if (extension !== "jpg" && extension !== "jpeg" && extension !== "png" && extension !== "tif") {
       alert("Esta imagen no es válida.");
@@ -187,7 +197,7 @@ class TourEditor extends React.Component {
 
     if (selectedItem !== null) {
       this.setState({
-        selectedItem: item
+        selectedItem: item,
       });
     } else {
       this.setState({ selectedItem: item });
@@ -224,21 +234,17 @@ class TourEditor extends React.Component {
 
     this.setState({
       selectedItem: updatedItem,
-      tourList: tourList.map(item => (item.id === updatedItem.id ? updatedItem : item))
+      tourList: tourList.map((item) => (item.id === updatedItem.id ? updatedItem : item)),
     });
   };
 
   handleRemoveLink = (element) => {
     let { selectedItem } = this.state;
-    selectedItem.destinationLinks = selectedItem.destinationLinks.filter(
-      (item) => item.id !== element.id
-    );
+    selectedItem.destinationLinks = selectedItem.destinationLinks.filter((item) => item.id !== element.id);
 
     this.setState({
       selectedItem,
-      tourList: this.state.tourList.map((item) =>
-        item.id === selectedItem.id ? selectedItem : item
-      ),
+      tourList: this.state.tourList.map((item) => (item.id === selectedItem.id ? selectedItem : item)),
       hoveredLinkElement: null,
     });
   };
@@ -251,15 +257,11 @@ class TourEditor extends React.Component {
     this.setState({ dialogType: type, dialogMessage: message, dialogIsOpen: true });
   };
 
-  hideDialogMessage = () => {
-    this.setState({ dialogType: "", dialogMessage: "", dialogIsOpen: false });
-  };
-
   handleTourSave = async () => {
     this.showLoadingScreen();
 
     let { id, tourList } = this.state;
-    let tempTourList = [];//tempTourList is the one that will be sent to the server.
+    let tempTourList = []; //tempTourList is the one that will be sent to the server.
 
     let data = new FormData();
 
@@ -275,20 +277,22 @@ class TourEditor extends React.Component {
     data.append("id", id);
 
     const config = {
-      onUploadProgress: p => {
-        this.setState({ loadingProgress: ((p.loaded / p.total) * 100) });
-      }
-    }
+      onUploadProgress: (p) => {
+        this.setState({ loadingProgress: (p.loaded / p.total) * 100 });
+      },
+    };
 
-    axios.post("http://localhost:4000/api/tour/save", data, config)
-      .then(response => {
+    axios
+      .post("http://localhost:4000/api/tour/save", data, config)
+      .then((response) => {
         console.log("Response: ", response);
         this.hideLoadingScreen();
         this.showDialogMessage("success", "Tour guardado");
-      }).catch(error => {
+      })
+      .catch((error) => {
         console.error("Cannot save tour.", error);
         this.hideLoadingScreen();
-        this.showDialogMessage("error", "No se pudo guardar tour");
+        this.showDialogMessage("error", "No se pudo guardar tour correctamente");
       });
   };
 
@@ -300,25 +304,15 @@ class TourEditor extends React.Component {
           type={this.state.dialogType}
           message={this.state.dialogMessage}
           handleClose={this.hideDialogMessage}
+          handleSuccess={() => this.props.history.push("/admin/estate")}
           isOpen={this.state.dialogIsOpen}
         />
         <div className="tour-editor-header">
-          <CustomButton
-            text="Inmuebles"
-            color="secondary"
-            small
-            icon="arrow_back"
-            onClick={() => this.props.history.push("/admin/estate")}
-          />
-          <h1><Icon tag="3d_rotation" /> Editor de Tour</h1>
-          <CustomButton
-            text="Guardar Tour"
-            color="primary"
-            small
-            icon="save"
-            disabled={(!this.state.tourList.length > 0)}
-            onClick={this.handleTourSave}
-          />
+          <CustomButton text="Inmuebles" color="secondary" small icon="arrow_back" onClick={() => this.props.history.push("/admin/estate")} />
+          <h1>
+            <Icon tag="3d_rotation" /> Editor de Tour
+          </h1>
+          <CustomButton text="Guardar Tour" color="primary" small icon="save" disabled={!this.state.tourList.length > 0} onClick={this.handleTourSave} />
         </div>
         <div className="tour-editor-body">
           <div className="editor-sidebar">
@@ -334,43 +328,19 @@ class TourEditor extends React.Component {
                 small
               />
               <div>
-                <FormInput
-                  name="title"
-                  placeholder="Título"
-                  handleChange={this.handleChange}
-                  value={this.state.title}
-                  width="160"
-                  small
-                  required
-                />
+                <FormInput name="title" placeholder="Título" handleChange={this.handleChange} value={this.state.title} width="160" small required />
                 <span style={{ display: "flex", alignItems: "center" }}>{this.state.tourList.length}/15</span>
-                <CustomButton
-                  type="submit"
-                  icon="add"
-                  text="Agregar"
-                  color="secondary"
-                  small
-                />
+                <CustomButton type="submit" icon="add" text="Agregar" color="secondary" small />
               </div>
             </form>
             <div className="editor-list">
               {this.state.tourList.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => this.handleItemSelect(item)}
-                  className={`list-item ${
-                    this.checkSelectedFile(item) ? "selected" : ""
-                    }`}
-                  title="Seleccionar"
-                >
+                <div key={item.id} onClick={() => this.handleItemSelect(item)} className={`list-item ${this.checkSelectedFile(item) ? "selected" : ""}`} title="Seleccionar">
                   <div>
                     <img src={item.fileString} alt={item.title} />
                   </div>
                   <div>{item.title}</div>
-                  <div
-                    title="Eliminar"
-                    onClick={() => this.handleRemoveItem(item.id)}
-                  >
+                  <div title="Eliminar" onClick={() => this.handleRemoveItem(item.id)}>
                     <Icon tag="cancel" />
                   </div>
                 </div>
@@ -380,79 +350,29 @@ class TourEditor extends React.Component {
           <div className="editor-scene">
             {this.state.selectedItem != null ? (
               <div className="editor-bar">
-                <FormSelect
-                  name="link"
-                  label="Destino: "
-                  handleChange={this.handleChange}
-                  value={this.state.link}
-                  items={this.getDestinationLinks()}
-                  displayValue="title"
-                />
+                <FormSelect name="link" label="Destino: " handleChange={this.handleChange} value={this.state.link} items={this.getDestinationLinks()} displayValue="title" />
 
                 {this.state.editMode ? (
-                  <CustomButton
-                    text="Eliminar"
-                    color="danger"
-                    small
-                    onClick={() =>
-                      this.handleRemoveLink(this.state.hoveredLinkElement)
-                    }
-                    disabled={this.state.hoveredLinkElement === null}
-                  />
+                  <CustomButton text="Eliminar" color="danger" small onClick={() => this.handleRemoveLink(this.state.hoveredLinkElement)} disabled={this.state.hoveredLinkElement === null} />
                 ) : (
-                    <CustomButton
-                      text="Agregar"
-                      color="primary"
-                      small
-                      onClick={() => this.handleAddLink()}
-                    />
-                  )}
-                <CustomButton
-                  text={this.state.editMode ? "Modo: Editar" : "Modo: Agregar"}
-                  color="secondary"
-                  small
-                  onClick={() =>
-                    this.setState({ editMode: !this.state.editMode })
-                  }
-                />
+                  <CustomButton text="Agregar" color="primary" small onClick={() => this.handleAddLink()} />
+                )}
+                <CustomButton text={this.state.editMode ? "Modo: Editar" : "Modo: Agregar"} color="secondary" small onClick={() => this.setState({ editMode: !this.state.editMode })} />
               </div>
             ) : null}
             <Scene embedded vr-mode-ui="enabled: false">
-              <Entity
-                primitive="a-assets"
-                events={{ loaded: () => console.log("Loaded") }}
-              >
-                <img
-                  id="tour_editor_enter"
-                  src="/icons/tour_editor_enter.png"
-                  alt="Enter icon"
-                />
+              <Entity primitive="a-assets" events={{ loaded: () => console.log("Loaded") }}>
+                <img id="tour_editor_enter" src="/icons/tour_editor_enter.png" alt="Enter icon" />
                 {this.state.tourList.map(({ id, title, fileString }) => (
-                  <img
-                    key={id}
-                    alt={title}
-                    id={title.replace(/ /g, "_")}
-                    src={fileString}
-                  />
+                  <img key={id} alt={title} id={title.replace(/ /g, "_")} src={fileString} crossOrigin="anonymous" />
                 ))}
               </Entity>
-              <Entity primitive="a-sky" src={this.getSelectedImage()} />
+              <Entity primitive="a-sky" src={this.getSelectedImage()} events={{ loaded: () => console.log("Loaded Sky") }} />
               <Entity light="type: ambient; color: #FFF; angle:360;" />
-              <Entity
-                primitive="a-camera"
-                look-controls={{ enabled: "true", pointerLockEnabled: "false" }}
-              >
+              <Entity primitive="a-camera" look-controls={{ enabled: "true", pointerLockEnabled: "false" }}>
                 <Entity primitive="a-cursor" />
                 {!this.state.editMode ? (
-                  <Entity
-                    id="main-box"
-                    primitive="a-box"
-                    position="0 0 -5"
-                    width="0.5"
-                    height="0.5"
-                    material={{ opacity: "0" }}
-                    events={{ click: (event) => this.handlePointClick(event) }}
-                  />
+                  <Entity id="main-box" primitive="a-box" position="0 0 -5" width="0.5" height="0.5" material={{ opacity: "0" }} events={{ click: (event) => this.handlePointClick(event) }} />
                 ) : null}
                 {this.state.selectedItem === null ? (
                   <Entity
@@ -468,22 +388,22 @@ class TourEditor extends React.Component {
               </Entity>
               {this.state.selectedItem !== null
                 ? this.state.selectedItem.destinationLinks.map((element) => (
-                  <Entity
-                    key={element.id}
-                    src="#tour_editor_enter"
-                    primitive="a-circle"
-                    rotation="0 0 0"
-                    radius="0.2"
-                    position={`${element.x} ${element.y} ${element.z}`}
-                    events={{
-                      mouseenter: () => this.handleCursorHover(element),
-                      mouseleave: () => this.handleCursorHover(null),
-                    }}
-                    animation__mouseenter="property: components.material.material.opacity; type: opacity; from: 1; to: 0.5; startEvents: mouseenter; dur: 200"
-                    animation__mouseleave="property: components.material.material.opacity; type: opacity; from: 0.5; to: 1; startEvents: mouseleave; dur: 200"
-                    look-at="[camera]"
-                  />
-                ))
+                    <Entity
+                      key={element.id}
+                      src="#tour_editor_enter"
+                      primitive="a-circle"
+                      rotation="0 0 0"
+                      radius="0.2"
+                      position={`${element.x} ${element.y} ${element.z}`}
+                      events={{
+                        mouseenter: () => this.handleCursorHover(element),
+                        mouseleave: () => this.handleCursorHover(null),
+                      }}
+                      animation__mouseenter="property: components.material.material.opacity; type: opacity; from: 1; to: 0.5; startEvents: mouseenter; dur: 200"
+                      animation__mouseleave="property: components.material.material.opacity; type: opacity; from: 0.5; to: 1; startEvents: mouseleave; dur: 200"
+                      look-at="[camera]"
+                    />
+                  ))
                 : null}
             </Scene>
           </div>
