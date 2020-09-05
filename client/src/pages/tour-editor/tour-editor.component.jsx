@@ -15,8 +15,6 @@ import LoadingScreen from "../../components/loading-screen/loading-screen.compon
 
 import "./tour-editor.styles.scss";
 
-//TODO: Optimize image load.
-
 class TourEditor extends React.Component {
   constructor() {
     super();
@@ -28,6 +26,7 @@ class TourEditor extends React.Component {
       title: "",
       selectedItem: null,
       tourList: [],
+      tourListDeleted: [],
       link: "",
       pointElement: null,
       editMode: false,
@@ -56,6 +55,8 @@ class TourEditor extends React.Component {
         console.log(success.data);
         //[...tourList, { id, title, file, fileString, destinationLinks: [] }]
         let { tourScenes } = success.data;
+
+        console.log("TOUR SCENES: ", JSON.stringify(tourScenes));
 
         this.setState({
           id: match.params.id,
@@ -176,17 +177,19 @@ class TourEditor extends React.Component {
 
   handleRemoveItem = (fileId) => {
     if (window.confirm("Está por eliminar un área ¿desea continuar?")) {
-      const { selectedItem } = this.state;
+      const { selectedItem, tourListDeleted } = this.state;
       if (selectedItem !== null) {
         if (fileId === selectedItem.id) {
           this.setState({
             tourList: this.state.tourList.filter((item) => item.id !== fileId),
             selectedItem: null,
+            tourListDeleted: [...tourListDeleted, fileId],
           });
         }
       } else {
         this.setState({
           tourList: this.state.tourList.filter((item) => item.id !== fileId),
+          tourListDeleted: [...tourListDeleted, fileId],
         });
       }
     }
@@ -257,11 +260,15 @@ class TourEditor extends React.Component {
     this.setState({ dialogType: type, dialogMessage: message, dialogIsOpen: true });
   };
 
+  hideDialogMessage = () => {
+    this.setState({ dialogType: "", dialogMessage: "", dialogIsOpen: false });
+  };
+
   handleTourSave = async () => {
     this.showLoadingScreen();
 
-    let { id, tourList } = this.state;
-    let tempTourList = []; //tempTourList is the one that will be sent to the server.
+    let { id, tourList, tourListDeleted } = this.state;
+    let tempTourList = []; // tempTourList is the one that will be sent to the server.
 
     let data = new FormData();
 
@@ -269,11 +276,17 @@ class TourEditor extends React.Component {
       data.append("file", tourList[i].file);
 
       let { id, title, destinationLinks } = tourList[i];
-      let { name } = tourList[i].file;
+      let name = "";
+
+      if (tourList[i].file !== null) {
+        name = tourList[i].file.name;
+      }
+
       tempTourList.push({ id, title, fileName: name, destinationLinks });
     }
 
     data.append("tourList", JSON.stringify(tempTourList));
+    data.append("tourListDeleted", JSON.stringify(tourListDeleted));
     data.append("id", id);
 
     const config = {
@@ -351,7 +364,6 @@ class TourEditor extends React.Component {
             {this.state.selectedItem != null ? (
               <div className="editor-bar">
                 <FormSelect name="link" label="Destino: " handleChange={this.handleChange} value={this.state.link} items={this.getDestinationLinks()} displayValue="title" />
-
                 {this.state.editMode ? (
                   <CustomButton text="Eliminar" color="danger" small onClick={() => this.handleRemoveLink(this.state.hoveredLinkElement)} disabled={this.state.hoveredLinkElement === null} />
                 ) : (
@@ -360,14 +372,14 @@ class TourEditor extends React.Component {
                 <CustomButton text={this.state.editMode ? "Modo: Editar" : "Modo: Agregar"} color="secondary" small onClick={() => this.setState({ editMode: !this.state.editMode })} />
               </div>
             ) : null}
-            <Scene embedded vr-mode-ui="enabled: false">
-              <Entity primitive="a-assets" events={{ loaded: () => console.log("Loaded") }}>
+            <Scene embedded vr-mode-ui="enabled: false" events={{ loaded: () => console.log("Loaded Scene") }}>
+              <Entity primitive="a-assets" timeout="10000" events={{ loaded: () => console.log("Loaded") }}>
                 <img id="tour_editor_enter" src="/icons/tour_editor_enter.png" alt="Enter icon" />
                 {this.state.tourList.map(({ id, title, fileString }) => (
-                  <img key={id} alt={title} id={title.replace(/ /g, "_")} src={fileString} crossOrigin="anonymous" />
+                  <img key={id} alt={title} id={title.replace(/ /g, "_")} src={fileString} onLoad={() => console.log(`${title.replace(/ /g, "_")} loaded`)} crossOrigin="anonymous" />
                 ))}
               </Entity>
-              <Entity primitive="a-sky" src={this.getSelectedImage()} events={{ loaded: () => console.log("Loaded Sky") }} />
+              <Entity primitive="a-sky" src={this.getSelectedImage()} />
               <Entity light="type: ambient; color: #FFF; angle:360;" />
               <Entity primitive="a-camera" look-controls={{ enabled: "true", pointerLockEnabled: "false" }}>
                 <Entity primitive="a-cursor" />

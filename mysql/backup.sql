@@ -322,7 +322,7 @@ CREATE TABLE `tour_scene` (
 
 LOCK TABLES `tour_scene` WRITE;
 /*!40000 ALTER TABLE `tour_scene` DISABLE KEYS */;
-INSERT INTO `tour_scene` VALUES (633642,4,'Sala 2','2d58e970c6db4c0cd41b8ecfc6685fcc.jpeg'),(795244,4,'Sala 1','054c1bf6e7776b38b48aa9abf92e4165.jpeg');
+INSERT INTO `tour_scene` VALUES (795244,4,'Sala 1','054c1bf6e7776b38b48aa9abf92e4165.jpeg');
 /*!40000 ALTER TABLE `tour_scene` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -447,10 +447,17 @@ BEGIN
         select 'INSERTED' as message, _id;
     else
 		update tour_scene set 
-        title = _title,
-        file_name = _file_name
+        title = _title
         where id = _id and estate_id = _estate_id;
         select 'UPDATED' as message, _id;
+       	/*UPDATE IMAGE NAME*/
+       	if (_file_name != '') then
+       		update tour_scene set 
+	        title = _title,
+	        file_name = _file_name
+	        where id = _id and estate_id = _estate_id;
+	        select 'UPDATED' as message, _id;
+       	end if;
     end if;
 END ;;
 DELIMITER ;
@@ -468,4 +475,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-08-31  0:47:57
+-- Dump completed on 2020-09-04 23:08:44

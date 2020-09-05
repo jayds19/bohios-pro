@@ -166,3 +166,4 @@
    'Access denied for user \'root\'@\'localhost\' (using password: YES)',
   sqlState: '28000',
   fatal: true }
+2020-09-04T22:58:37-0400 <error> tour.js:42 (saveTour) No se pudo leer tourList.  Unexpected token u in JSON at position 0

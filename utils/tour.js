@@ -8,10 +8,8 @@ const prepareTourListFiles = async (tourList, files) => {
     let tourListItem = tourList[i];
 
     for (let j = 0; j < files.length; j++) {
-
       // Match the new uploaded image with the tourList.
       if (tourListItem.fileName === files[j].originalname) {
-
         // Delete old image if it exists
         try {
           fs.unlink(mainDir, "/public/tour", tourListItem.fileName);
@@ -25,6 +23,7 @@ const prepareTourListFiles = async (tourList, files) => {
         // Move uploaded file to a new public location.
         let oldLocation = path.join(mainDir, files[j].path);
         let newLocation = path.join(mainDir, "/public/tour", tourListItem.fileName);
+
         try {
           fs.renameSync(oldLocation, newLocation);
         } catch (ex) {
@@ -38,6 +37,13 @@ const prepareTourListFiles = async (tourList, files) => {
   return tourList;
 };
 
+const unlinkTourImage = async (fileName) => {
+  const mainDir = path.join(path.resolve(__dirname, ".."));
+  const fileToDelete = path.join(mainDir, "/public/tour", fileName);
+  fs.unlinkSync(fileToDelete);
+};
+
 module.exports = {
-  prepareTourListFiles
+  prepareTourListFiles,
+  unlinkTourImage
 };
