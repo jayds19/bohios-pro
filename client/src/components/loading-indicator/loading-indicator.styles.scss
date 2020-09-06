@@ -13,7 +13,7 @@
 	margin-left: auto;
 	margin-right:  auto;
 	opacity: 0;
-	transform: scale(0.5);
+	transform: scale(0);
 
 	&.show-loading-indicator {
 		animation: showLoadingIndicator 0.3s forwards;
@@ -27,7 +27,7 @@
 @keyframes showLoadingIndicator {
 	from {
 		opacity: 0;
-		transform: scale(0.5);
+		transform: scale(0);
 	}
 
 	to {
@@ -44,6 +44,6 @@
 
 	to {
 		opacity: 0;
-		transform: scale(0.5);
+		transform: scale(0);
 	}
 }

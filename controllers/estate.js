@@ -117,7 +117,7 @@ const getEstate = async (req, res) => {
 
   let estate = estateRow[0];
 
-  if (estate == undefined) {
+  if (estate === undefined) {
     res.status(404).send({ error: ERRORS.NOT_FOUND });
     return;
   }

@@ -381,6 +381,7 @@ class Estate extends React.Component {
 					type={this.state.dialogType}
 					message={this.state.dialogMessage}
 					handleClose={this.closeModal}
+					handleSuccess={this.closeModal}
 				/>
 				<h2 className="title">Adminstración - Inmobiliarios</h2>
 				<div className="main-area">
