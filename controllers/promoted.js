@@ -39,9 +39,8 @@ const getPromoted = async (req, res) => {
     return;
   }
 
-  let promotedQuery = `select * from promoted where id = ${localConnection.escape(
-    id
-  )}`;
+  let promotedQuery = `select id, title, link, img as imageString, views, date_limit as dateLimit, date, active from promoted 
+  where id = ${localConnection.escape(id)}`;
 
   let promotedRow = await localQuery(promotedQuery).catch((ex) => {
     logService.error("Could not load estates. ", ex);
@@ -55,15 +54,15 @@ const getPromoted = async (req, res) => {
     return;
   }
 
-  if (promoted.img != "") {
-    promoted.imageString = "http://localhost:4000/promoted/" + promoted.img;
+  if (promoted.imageString != "") {
+    promoted.imageString = "http://localhost:4000/promoted/" + promoted.imageString;
   }
 
   res.send({ promoted });
 };
 
 const postSavePromoted = async (req, res) => {
-  let { id, title, link, imageString, active } = req.body;
+  let { id, title, link, imageString, dateLimit, active } = req.body;
 
   console.log(">>> POST");
 
@@ -85,6 +84,12 @@ const postSavePromoted = async (req, res) => {
 
   if (imageString == undefined || imageString == "") {
     console.log("image | ", ERRORS.PARAM_ERROR);
+    res.status(400).send({ error: ERRORS.PARAM_ERROR });
+    return;
+  }
+
+  if (dateLimit == undefined || dateLimit == "") {
+    console.log("dateLimit | ", ERRORS.PARAM_ERROR);
     res.status(400).send({ error: ERRORS.PARAM_ERROR });
     return;
   }
@@ -121,6 +126,7 @@ const postSavePromoted = async (req, res) => {
     title,
     link,
     imageName,
+    dateLimit,
     active
   ).catch((ex) => {
     logService.error("Could not save Promoted. ", ex.message);

@@ -25,6 +25,7 @@ class Promoted extends React.Component {
 			title: "",
 			link: "",
 			imageString: "",
+			dateLimit: "",
 			active: true,
 			tabPosition: 0,
 			// Promoted list
@@ -88,7 +89,7 @@ class Promoted extends React.Component {
 	handleSaveSubmit = (e) => {
 		e.preventDefault();
 		this.showLoadingIndicator();
-		let { id, title, link, imageString, active } = this.state;
+		let { id, title, link, imageString, dateLimit, active } = this.state;
 
 		axios
 			.post(
@@ -98,6 +99,7 @@ class Promoted extends React.Component {
 					title,
 					link,
 					imageString,
+					dateLimit,
 					active,
 				})
 			)
@@ -131,6 +133,7 @@ class Promoted extends React.Component {
 			title: "",
 			link: "",
 			imageString: "",
+			dateLimit: "",
 			active: true,
 			// tabPosition: 0, In this case it is not necessary.
 			// Promoted list
@@ -341,12 +344,13 @@ class Promoted extends React.Component {
 											handleChange={this.handleChange}
 											required
 										/>
-									</div>
-									<div className="form-col">
-										<FormImageInput
-											label="Imagen"
-											handleChange={this.handleImageChange}
-											img={this.state.imageString}
+										<FormInput
+											type="date"
+											name="dateLimit"
+											label="Fecha límite"
+											value={this.state.dateLimit}
+											handleChange={this.handleChange}
+											required
 										/>
 										<FormInput
 											type="checkbox"
@@ -356,6 +360,13 @@ class Promoted extends React.Component {
 											handleChange={this.handleChange}
 											title="Al activar esta casilla la promoción será visible."
 											required
+										/>
+									</div>
+									<div className="form-col">
+										<FormImageInput
+											label="Imagen"
+											handleChange={this.handleImageChange}
+											img={this.state.imageString}
 										/>
 									</div>
 									<div className="form-col controls">

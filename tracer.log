@@ -620,3 +620,7 @@
     at next (/home/jaydiazsantana/Projects/bohios-pro/node_modules/express/lib/router/route.js:137:13)
     at Route.dispatch (/home/jaydiazsantana/Projects/bohios-pro/node_modules/express/lib/router/route.js:112:3)
     at Layer.handle [as handle_request] (/home/jaydiazsantana/Projects/bohios-pro/node_modules/express/lib/router/layer.js:95:5)
+2020-09-12T12:48:12-0400 <error> promoted.js:133 (savePromoted.catch) Could not save Promoted.  ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1
+      )' at line 6
+2020-09-12T12:49:55-0400 <error> promoted.js:133 (savePromoted.catch) Could not save Promoted.  ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1
+      )' at line 6
