@@ -1,12 +1,15 @@
 const { localConnection, localQuery } = require("./mysql");
 
-const savePromoted = (id, title, link,active) =>
+const savePromoted = (id, title, link, img, active) =>
   new Promise((resolve, reject) => {
     let query = `call savePromoted(${id},
       ${localConnection.escape(title)},
       ${localConnection.escape(link)},
+      ${localConnection.escape(img)},
       ${active}
       );`;
+
+    console.log("savePromoted: ", query);
 
     localConnection.query(query, (err, rows, fields) => {
       if (err) {

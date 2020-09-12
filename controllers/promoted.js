@@ -2,6 +2,7 @@ const { ERRORS, MESSAGES } = require("../config");
 const logService = require("../services/log");
 const { localConnection, localQuery } = require("../services/mysql");
 const { savePromoted } = require("../services/promoted");
+const { genImageName, saveImage } = require("../services/image");
 
 const getPromotedList = async (req, res) => {
   let { title, active } = req.query;
@@ -14,7 +15,11 @@ const getPromotedList = async (req, res) => {
     active = "";
   }
 
-  let query = `select * from promoted where id > 0 ${title != "" ? `and title like ${localConnection.escape("%" + title + "%")}` : ""}
+  let query = `select * from promoted where id > 0 ${
+    title != ""
+      ? `and title like ${localConnection.escape("%" + title + "%")}`
+      : ""
+  }
   ${active != "" ? `and active = ${localConnection.escape(active)}` : ""}
   order by id desc;`;
 
@@ -34,7 +39,9 @@ const getPromoted = async (req, res) => {
     return;
   }
 
-  let promotedQuery = `select * from promoted where id = ${localConnection.escape(id)}`;
+  let promotedQuery = `select * from promoted where id = ${localConnection.escape(
+    id
+  )}`;
 
   let promotedRow = await localQuery(promotedQuery).catch((ex) => {
     logService.error("Could not load estates. ", ex);
@@ -48,11 +55,17 @@ const getPromoted = async (req, res) => {
     return;
   }
 
+  if (promoted.img != "") {
+    promoted.imageString = "http://localhost:4000/promoted/" + promoted.img;
+  }
+
   res.send({ promoted });
 };
 
 const postSavePromoted = async (req, res) => {
-  let { id, title, link, active } = req.body;
+  let { id, title, link, imageString, active } = req.body;
+
+  console.log(">>> POST");
 
   if (id == undefined || id == "" || isNaN(id)) {
     id = 0;
@@ -70,6 +83,12 @@ const postSavePromoted = async (req, res) => {
     return;
   }
 
+  if (imageString == undefined || imageString == "") {
+    console.log("image | ", ERRORS.PARAM_ERROR);
+    res.status(400).send({ error: ERRORS.PARAM_ERROR });
+    return;
+  }
+
   console.log(">>> ACTIVE: ", active);
 
   if (active == undefined || active == "") {
@@ -80,9 +99,33 @@ const postSavePromoted = async (req, res) => {
 
   active = active ? 1 : 0;
 
-  let { message, _id } = await savePromoted(id, title, link, active).catch((ex) => {
+  let imageName = "";
+
+  // Image verification
+  if (imageString.length > 256) {
+    imageName = genImageName() + ".jpg";
+    imageLocation = "./public/promoted/" + imageName;
+    let base64 = imageString.split(",")[1];
+
+    try {
+      await saveImage(imageLocation, base64);
+    } catch (ex) {
+      logService.error("Could not save Promoted image. ", ex);
+      res.status(500).send({ error: ERRORS.DB_ERROR });
+      return;
+    }
+  }
+
+  let { message, _id } = await savePromoted(
+    id,
+    title,
+    link,
+    imageName,
+    active
+  ).catch((ex) => {
     logService.error("Could not save Promoted. ", ex.message);
-    return "";
+    res.status(500).send({ error: ERRORS.DB_ERROR });
+    return;
   });
 
   if (message) {

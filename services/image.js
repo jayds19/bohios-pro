@@ -1,7 +1,12 @@
 const fs = require("fs");
-const saveImage = (name, data) =>
+
+const genImageName = () =>
+	Math.random().toString(36).substring(2, 15) +
+	Math.random().toString(36).substring(2, 15);
+
+const saveImage = (imageLocation, imageData) =>
 	new Promise((resolve, reject) => {
-		fs.writeFile(`./public/gallery/${name}`, data, "base64", (error) => {
+		fs.writeFile(imageLocation, imageData, "base64", (error) => {
 			if (error) {
 				reject(error);
 				return;
@@ -20,12 +25,15 @@ const saveGalleryImages = async (imageList) => {
 			}
 		}
 
-		if (imageList[i].imageString != "" && imageList[i].imageString != undefined) {
+		if (
+			imageList[i].imageString != "" &&
+			imageList[i].imageString != undefined
+		) {
 			let base64 = imageList[i].imageString.split(",")[1];
 			let name = imageList[i].name;
 
 			try {
-				await saveImage(name, base64);
+				await saveImage(`./public/gallery/${name}`, base64);
 			} catch (ex) {
 				throw new Error("Could not save image. ", ex.message);
 			}
@@ -34,5 +42,7 @@ const saveGalleryImages = async (imageList) => {
 };
 
 module.exports = {
-	saveGalleryImages
+	genImageName,
+	saveImage,
+	saveGalleryImages,
 };

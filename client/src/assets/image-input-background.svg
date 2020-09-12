@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1080"
+   height="1920"
+   viewBox="0 0 285.74999 508.00001"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
+   sodipodi:docname="image-input-background.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.26"
+     inkscape:cx="-108.24176"
+     inkscape:cy="749.01099"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1312"
+     inkscape:window-height="715"
+     inkscape:window-x="54"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,211.00002)">
+    <rect
+       id="rect3713"
+       width="285.75"
+       height="508"
+       x="0"
+       y="-211.00002"
+       style="stroke-width:0.42835376;fill:#212529;fill-opacity:1" />
+    <g
+       id="g4559"
+       transform="translate(0,51.453501)">
+      <text
+         id="text3717"
+         y="-16.287476"
+         x="143.32594"
+         style="font-style:normal;font-weight:normal;font-size:15.65301991px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.3913255"
+         xml:space="preserve"><tspan
+           style="text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:0.3913255"
+           y="-16.287476"
+           x="143.32594"
+           id="tspan3715"
+           sodipodi:role="line">Tamaño recomendado</tspan><tspan
+           id="tspan4524"
+           style="text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:0.3913255"
+           y="3.2787993"
+           x="143.32594"
+           sodipodi:role="line">1920 x 1080 PX</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:45.32594681px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13314867"
+         x="142.89713"
+         y="-53.421165"
+         id="text4530"><tspan
+           sodipodi:role="line"
+           x="142.89713"
+           y="-53.421165"
+           style="text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.13314867"
+           id="tspan4528">↑</tspan></text>
+      <text
+         transform="scale(1,-1)"
+         id="text4538"
+         y="-36.514133"
+         x="142.89713"
+         style="font-style:normal;font-weight:normal;font-size:45.32594681px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13314867"
+         xml:space="preserve"><tspan
+           id="tspan4536"
+           style="text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.13314867"
+           y="-36.514133"
+           x="142.89713"
+           sodipodi:role="line">↑</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:45.32594681px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13314867"
+         x="12.495712"
+         y="-239.11079"
+         id="text4542"
+         transform="matrix(0,-1,-1,0,0,0)"><tspan
+           sodipodi:role="line"
+           x="12.495713"
+           y="-239.11079"
+           style="text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.13314867"
+           id="tspan4540">↑</tspan></text>
+      <text
+         transform="rotate(-90)"
+         id="text4546"
+         y="43.871296"
+         x="12.495712"
+         style="font-style:normal;font-weight:normal;font-size:45.32594681px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13314867"
+         xml:space="preserve"><tspan
+           id="tspan4544"
+           style="text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.13314867"
+           y="43.871296"
+           x="12.495713"
+           sodipodi:role="line">↑</tspan></text>
+    </g>
+  </g>
+</svg>

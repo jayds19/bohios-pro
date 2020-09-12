@@ -133,7 +133,7 @@ class Estate extends React.Component {
 		}
 	}
 
-	handleGalleryChange = (event) => {
+		handleGalleryChange = (event) => {
 		let fileReader = new FileReader();
 		let name = "";
 		let size = 0;
