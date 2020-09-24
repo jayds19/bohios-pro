@@ -15,11 +15,10 @@ const getPromotedList = async (req, res) => {
     active = "";
   }
 
-  let query = `select * from promoted where id > 0 ${
-    title != ""
+  let query = `select * from promoted where id > 0 ${title != ""
       ? `and title like ${localConnection.escape("%" + title + "%")}`
       : ""
-  }
+    }
   ${active != "" ? `and active = ${localConnection.escape(active)}` : ""}
   order by id desc;`;
 
@@ -43,7 +42,7 @@ const getPromoted = async (req, res) => {
   where id = ${localConnection.escape(id)}`;
 
   let promotedRow = await localQuery(promotedQuery).catch((ex) => {
-    logService.error("Could not load estates. ", ex);
+    logService.error("Could not load promoted. ", ex);
     return [];
   });
 

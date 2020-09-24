@@ -64,6 +64,34 @@ INSERT INTO `amenity_vs_estate` VALUES (1,4),(2,3),(2,4),(3,3),(4,1),(4,3),(5,3)
 UNLOCK TABLES;
 
 --
+-- Table structure for table `blog`
+--
+
+DROP TABLE IF EXISTS `blog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `blog` (
+  `id` int NOT NULL,
+  `title` varchar(64) NOT NULL DEFAULT '',
+  `html` text,
+  `views` int NOT NULL DEFAULT '0',
+  `date` date DEFAULT NULL,
+  `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blog`
+--
+
+LOCK TABLES `blog` WRITE;
+/*!40000 ALTER TABLE `blog` DISABLE KEYS */;
+INSERT INTO `blog` VALUES (1,'Bienvenido a BohiosPro','<h1>Hello again again</h1>',0,'2020-09-12',1);
+/*!40000 ALTER TABLE `blog` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `contract_type`
 --
 
@@ -187,7 +215,7 @@ CREATE TABLE `gallery` (
   `img` varchar(256) NOT NULL,
   `estate_id` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -196,7 +224,7 @@ CREATE TABLE `gallery` (
 
 LOCK TABLES `gallery` WRITE;
 /*!40000 ALTER TABLE `gallery` DISABLE KEYS */;
-INSERT INTO `gallery` VALUES (7,'gallery_1.jpg',4),(8,'gallery_2.jpg',4);
+INSERT INTO `gallery` VALUES (7,'gallery_1.jpg',4);
 /*!40000 ALTER TABLE `gallery` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,6 +250,36 @@ LOCK TABLES `municipality_district` WRITE;
 /*!40000 ALTER TABLE `municipality_district` DISABLE KEYS */;
 INSERT INTO `municipality_district` VALUES ('250101','Santiago de los Caballeros'),('250102','Pedro García'),('250105','La Canela'),('250106','San Francisco de Jacagua'),('250107','Hato del Yaque'),('250201','Bisonó'),('250301','Jánico'),('250302','Juncalito'),('250303','El Caimito'),('250401','Licey al Medio'),('250402','Las Palomas'),('250501','San José de las Matas'),('250502','El Rubio'),('250503','La Cuesta'),('250504','Las Placetas'),('250601','Tamboril'),('250602','Canca La Piedra'),('250701','Villa González'),('250702','Palmar Arriba'),('250703','El Limón'),('250801','Puñal'),('250802','Guayabal'),('250803','Canabacoa'),('250901','Sabana Iglesia'),('251001','Baitoa');
 /*!40000 ALTER TABLE `municipality_district` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `promoted`
+--
+
+DROP TABLE IF EXISTS `promoted`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `promoted` (
+  `id` int NOT NULL,
+  `title` varchar(64) NOT NULL,
+  `link` varchar(256) NOT NULL DEFAULT '',
+  `img` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `views` int NOT NULL DEFAULT '0',
+  `date_limit` date DEFAULT NULL,
+  `date` datetime NOT NULL,
+  `active` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `promoted`
+--
+
+LOCK TABLES `promoted` WRITE;
+/*!40000 ALTER TABLE `promoted` DISABLE KEYS */;
+INSERT INTO `promoted` VALUES (1,'Test 1','','',0,NULL,'2020-09-05 12:41:29',0),(2,'Test 2','','',0,NULL,'2020-09-05 12:41:29',1),(3,'Test 3','','',0,NULL,'2020-09-05 12:41:29',1),(4,'Test 4','test','cmmuhqp8g45ko6aqxcy7ur.jpg',0,NULL,'2020-09-05 12:41:29',1),(5,'Test 5','test','wudtabsrjhdhss1q0elng8.jpg',0,'2020-09-29','2020-09-05 12:41:29',1);
+/*!40000 ALTER TABLE `promoted` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -327,8 +385,79 @@ INSERT INTO `tour_scene` VALUES (795244,4,'Sala 1','054c1bf6e7776b38b48aa9abf92e
 UNLOCK TABLES;
 
 --
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user` (
+  `id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping routines for database 'bohios-pro'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `saveBlog` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveBlog`(
+	IN `_id` int,
+	IN `_title` varchar(64),
+	IN `_html` text,
+	IN `_active` tinyint(1)
+)
+BEGIN
+	set @currentId = (select id from blog where id = _id);
+    if (@currentId is null) then 
+    	set @newId = (select max(id) from b);
+    	if(@newId is null) then
+    		set @newId = 0;
+    	end if;
+    	
+    	set @newId = @newId + 1;
+    	
+		insert into blog values (
+			@newId,
+            _title,
+            _html,
+            default,
+            now(),
+            _active
+        );
+        select 'INSERTED' as message, @newId as _id;
+    else
+    	update blog set 
+        title = _title,
+        html = _html,
+        active = _active
+        where id = _id;
+        select 'UPDATED' as message, _id;
+    end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `saveEstate` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -419,6 +548,71 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `savePromoted` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `savePromoted`(
+	IN `_id` int,
+	IN `_title` varchar(64),
+	IN `_link` varchar(265),
+	IN `_img` varchar(256),
+	IN `_date_limit` date,
+	IN `_active` tinyint(1)
+)
+BEGIN
+	set @currentId = (select id from promoted where id = _id);
+    if (@currentId is null) then 
+    	set @newId = (select max(id) from promoted);
+    	if(@newId is null) then
+    		set @newId = 0;
+    	end if;
+    	
+    	set @newId = @newId + 1;
+    	
+		insert into promoted values (
+			@newId,
+            _title,
+            _link,
+            _img,
+            default,
+            _date_limit,
+            now(),
+            _active
+        );
+        select 'INSERTED' as message, @newId as _id;
+    else 
+		if (_img = '') then
+			update promoted set 
+	        title = _title,
+	        link = _link,
+	        date_limit = _date_limit,
+	        active = _active
+	        where id = _id;
+	        select 'UPDATED' as message, _id;
+	    else
+	    	update promoted set 
+	        title = _title,
+	        link = _link,
+	        img = _img,
+	        date_limit = _date_limit,
+	        active = _active
+	        where id = _id;
+	        select 'UPDATED' as message, _id;
+	    end if;
+    end if;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `saveTourScene` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -475,4 +669,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-04 23:08:44
+-- Dump completed on 2020-09-23 23:18:24

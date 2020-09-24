@@ -7,6 +7,7 @@ const cors = require("cors");
 const estateRouter = require("./routes/estate");
 const tourRouter = require("./routes/tour");
 const promotedRouter = require("./routes/promoted");
+const blogRouter = require("./routes/blog");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.static("public"));
 app.use("/api", estateRouter);
 app.use("/api", tourRouter);
 app.use("/api", promotedRouter);
+app.use("/api", blogRouter);
 
 //app.use("/bohios-pro", createProxyMiddleware({ target: `http://localhost:${PORT}`, changeOrigin: true }));
 

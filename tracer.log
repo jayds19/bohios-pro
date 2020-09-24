@@ -624,3 +624,4 @@
       )' at line 6
 2020-09-12T12:49:55-0400 <error> promoted.js:133 (savePromoted.catch) Could not save Promoted.  ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1
       )' at line 6
+2020-09-18T22:47:30-0400 <error> blog.js:93 (saveBlog.catch) Could not save Blog.  html is not defined

@@ -5,6 +5,7 @@ import Header from "./components/header/header.component";
 import EstatePage from "./pages/estate/estate.component";
 import TourEditor from "./pages/tour-editor/tour-editor.component";
 import PromotedPage from "./pages/promoted/promoted.component";
+import BlogPage from "./pages/blog/blog.component";
 
 import './App.css';
 
@@ -16,6 +17,7 @@ function App() {
         <Route exact path="/admin/estate" component={EstatePage} />
         <Route exact path="/admin/estate/tour-editor/:id" component={TourEditor} />
         <Route exact path="/admin/promoted" component={PromotedPage} />
+        <Route exact path="/admin/blog" component={BlogPage} />
       </Switch>
     </div>
   );

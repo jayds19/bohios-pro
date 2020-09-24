@@ -13,11 +13,9 @@ import FormImageInput from "../../components/form-image-input/form-image-input.c
 
 import "./promoted.styles.scss";
 
-// TODO: Load image in instagram size.
-
 class Promoted extends React.Component {
-	constructor(props) {
-		super(props);
+	constructor() {
+		super();
 
 		this.state = {
 			// Form data
@@ -325,67 +323,67 @@ class Promoted extends React.Component {
 								</table>
 							</div>
 						) : (
-							<div className="edit-area">
-								<form onSubmit={this.handleSaveSubmit}>
-									<div className="form-col">
-										<FormInput
-											type="text"
-											name="title"
-											label="Título"
-											value={this.state.title}
-											handleChange={this.handleChange}
-											required
-										/>
-										<FormInput
-											type="text"
-											name="link"
-											label="Enlace"
-											value={this.state.link}
-											handleChange={this.handleChange}
-											required
-										/>
-										<FormInput
-											type="date"
-											name="dateLimit"
-											label="Fecha límite"
-											value={this.state.dateLimit}
-											handleChange={this.handleChange}
-											required
-										/>
-										<FormInput
-											type="checkbox"
-											name="active"
-											label="Estado de la promoción"
-											checked={this.state.active}
-											handleChange={this.handleChange}
-											title="Al activar esta casilla la promoción será visible."
-											required
-										/>
-									</div>
-									<div className="form-col">
-										<FormImageInput
-											label="Imagen"
-											handleChange={this.handleImageChange}
-											img={this.state.imageString}
-										/>
-									</div>
-									<div className="form-col controls">
-										<CustomButton
-											type="submit"
-											color="primary"
-											icon="save"
-											text="Guardar"
-										/>
-										<CustomButton
-											onClick={this.handleCleanForm}
-											color="secondary"
-											icon="autorenew"
-											text="Limpiar"
-										/>
-									</div>
-								</form>
-							</div>
-						)}
+								<div className="edit-area">
+									<form onSubmit={this.handleSaveSubmit}>
+										<div className="form-col">
+											<FormInput
+												type="text"
+												name="title"
+												label="Título"
+												value={this.state.title}
+												handleChange={this.handleChange}
+												required
+											/>
+											<FormInput
+												type="text"
+												name="link"
+												label="Enlace"
+												value={this.state.link}
+												handleChange={this.handleChange}
+												required
+											/>
+											<FormInput
+												type="date"
+												name="dateLimit"
+												label="Fecha límite"
+												value={this.state.dateLimit}
+												handleChange={this.handleChange}
+												required
+											/>
+											<FormInput
+												type="checkbox"
+												name="active"
+												label="Estado de la promoción"
+												checked={this.state.active}
+												handleChange={this.handleChange}
+												title="Al activar esta casilla la promoción será visible."
+												required
+											/>
+										</div>
+										<div className="form-col">
+											<FormImageInput
+												label="Imagen"
+												handleChange={this.handleImageChange}
+												img={this.state.imageString}
+											/>
+										</div>
+										<div className="form-col controls">
+											<CustomButton
+												type="submit"
+												color="primary"
+												icon="save"
+												text="Guardar"
+											/>
+											<CustomButton
+												onClick={this.handleCleanForm}
+												color="secondary"
+												icon="autorenew"
+												text="Limpiar"
+											/>
+										</div>
+									</form>
+								</div>
+							)}
 					</div>
 				</div>
 			</div>

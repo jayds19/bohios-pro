@@ -1,12 +1,10 @@
 const { localConnection } = require("./mysql");
 
-const savePromoted = (id, title, link, img, dateLimit, active) =>
+const saveBlog = (id, title, html, active) =>
   new Promise((resolve, reject) => {
-    let query = `call savePromoted(${id},
+    let query = `call saveBlog(${id},
       ${localConnection.escape(title)},
-      ${localConnection.escape(link)},
-      ${localConnection.escape(img)},
-      ${localConnection.escape(dateLimit)},
+      ${localConnection.escape(html)},
       ${active}
       );`;
 
@@ -26,5 +24,5 @@ const savePromoted = (id, title, link, img, dateLimit, active) =>
   });
 
 module.exports = {
-  savePromoted,
+  saveBlog,
 };
