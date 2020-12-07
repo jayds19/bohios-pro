@@ -8,7 +8,7 @@ const FormSidebar = ({ current }) => (
     <Link className={`sidebar-item ${current === 1 ? 'selected' : ''}`} to="/admin/estate">Inmuebles</Link>
     <Link className={`sidebar-item ${current === 2 ? 'selected' : ''}`} to="/admin/promoted">Promocionados</Link>
     <Link className={`sidebar-item ${current === 3 ? 'selected' : ''}`} to="/admin/blog">Blogs</Link>
-    <Link className={`sidebar-item ${current === 4 ? 'selected' : ''}`} to="/">Usuarios</Link>
+    <Link className={`sidebar-item ${current === 4 ? 'selected' : ''}`} to="/admin/user">Usuarios</Link>
   </div>
 );
 

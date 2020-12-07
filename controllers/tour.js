@@ -1,38 +1,26 @@
+const fs = require("fs");
+const path = require("path");
 const { ERRORS } = require("../config");
 const logService = require("../services/log");
-const { loadTour, saveTourScenes, deleteTourScenes } = require("../services/tour");
+const { loadTour } = require("../services/tour");
 const { prepareTourListFiles } = require("../utils/tour");
-
-const getTour = async (req, res) => {
-  let { id } = req.query;
-
-  try {
-    let tourScenes = await loadTour(id);
-    res.send({ tourScenes });
-  } catch (ex) {
-    res.status(500).send({ error: ERRORS.DB_ERROR });
-  }
-};
 
 const saveTour = async (req, res) => {
   console.log(">>> Request Files: ", req.files);
-
+      
   const files = req.files;
-  const { id, tourList, tourListDeleted } = req.body;
-
+  const { id, tourList } = req.body;
+  
   console.log(">>> Tour ID: ", id);
   console.log(">>> Tour list: ", tourList);
-  console.log(">>> Tour id's to delete: ", tourListDeleted);
 
-  let parsedTourList = [];
-  let parsedDeleteList = [];
+  let parsedtourList = {};
 
   //tourList validation.
   try {
     parsedTourList = JSON.parse(tourList);
-    parsedDeleteList = JSON.parse(tourListDeleted);
 
-    if (parsedTourList.length === 0) {
+    if (parsedTourList === {}) {
       res.send({ error: ERRORS.PARAM_ERROR });
       logService.error("No se pudo leer tourList. ", ex.message);
       return;
@@ -42,28 +30,28 @@ const saveTour = async (req, res) => {
     logService.error("No se pudo leer tourList. ", ex.message);
     return;
   }
-
-  // Normalize new files and fil names.
-  parsedTourList = await prepareTourListFiles(parsedTourList, files).catch((ex) => {
-    console.log("Cannot prepare TourList. ", ex);
-    return [];
-  });
-
+  //TODO: Change the place of the response.
+  res.send({ message: "OK" });
   console.log(">>> New tour list: ", parsedTourList);
+};
 
-  await deleteTourScenes(parsedDeleteList);
+const getTour = async (req, res) => {
+  let { id } = req.query;
 
-  saveTourScenes(parsedTourList, id)
-    .then(() => {
-      res.send({ message: "OK" });
-    })
-    .catch((ex) => {
-      console.log("Cannot complete the save process. ", ex.message);
-      res.status(500).send({ error: ERRORS.DB_ERROR });
-    });
+  try {
+    let rows = await loadTour(id);
+    if (rows.length < 1) {
+      res.status(404).send({ error: ERRORS.NOT_FOUND });
+      return;
+    }
+    let data = rows[0];
+    res.send({ tour: data });
+  } catch (ex) {
+    res.status(500).send({ error: ERRORS.DB_ERROR });
+  }
 };
 
 module.exports = {
   saveTour,
-  getTour,
+  getTour
 };

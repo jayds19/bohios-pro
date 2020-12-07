@@ -392,7 +392,18 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(16) NOT NULL,
+  `password` varchar(64) NOT NULL,
+  `type` int NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `phone` varchar(20) NOT NULL DEFAULT '',
+  `email` varchar(200) NOT NULL,
+  `company_name` varchar(100) NOT NULL DEFAULT '',
+  `company_phone` varchar(20) NOT NULL DEFAULT '',
+  `company_email` varchar(200) NOT NULL DEFAULT '',
+  `active` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -669,4 +680,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-23 23:18:24
+-- Dump completed on 2020-09-27  8:43:07

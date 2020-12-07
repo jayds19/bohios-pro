@@ -6,6 +6,7 @@ import EstatePage from "./pages/estate/estate.component";
 import TourEditor from "./pages/tour-editor/tour-editor.component";
 import PromotedPage from "./pages/promoted/promoted.component";
 import BlogPage from "./pages/blog/blog.component";
+import UserPage from "./pages/user/user.component";
 
 import './App.css';
 
@@ -18,6 +19,7 @@ function App() {
         <Route exact path="/admin/estate/tour-editor/:id" component={TourEditor} />
         <Route exact path="/admin/promoted" component={PromotedPage} />
         <Route exact path="/admin/blog" component={BlogPage} />
+        <Route exact path="/admin/user" component={UserPage} />
       </Switch>
     </div>
   );
